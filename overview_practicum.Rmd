@@ -1,0 +1,289 @@
+---
+title: "Practicum Overview"
+author: "Senetcky, Alexander; Archambault, Gary"
+date: '2022-09-27'
+output:
+   html_document:
+    toc: true # table of content true
+    toc_float: true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    theme: united  # many options for theme, this one is my favorite.
+    highlight: tango  # specifies the syntax highlighting style
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Objectives  
+
+Over the course of this practicum it is our hopes that our student will be able to
+demonstrate proficiency or an appropriate level of understanding for the following:  
+
+## Knowledge based skills
+
+* A working knowledge of the statistical programming language, R, and its
+family of packages known as the 
+[tidyverse](https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/)
+
+* A working knowledge of the 
+[R Studio Integrated Development Environment (IDE)](https://www.rstudio.com/products/rstudio/)
+
+* A working knowledge of using R to query Star-model based data housed within
+SQL databases 
+
+* A working knowledge of Connecticut's 
+[Open Data Portal](https://data.ct.gov/)(ODP)
+
+* A basic understanding of Devops and AGILE workflows within the Azure DevOps tool
+
+* A basic understanding of Git, a distributed source control
+
+## Project based Outcomes 
+
+* An ODP data product that will more easily serve the public a tabular version 
+of the data found on DPH's [Infectious Diseases Statistics page](https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
+
+
+
+# Timeline
+
+## Getting set up
+1. Getting Access to our developer environment and star model
+1. R + R Studio Bootcamp
+1. Git crashcourse
+1. R usescases at the DPH
+
+## Project Development
+1. Primer on working in Azure Devops - primarily git focused
+1. Overview of the data on [Infectious Diseases Statistics page](https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
+    1. Pros and Cons - how do we think we can make it better
+1. Pulling the data from the star model
+1. Comparing the data from the star model to previous public releases
+1. Creating a script that can be the basis of our automation that will move data
+from the star model to the ODP for public consumption
+
+
+# Suggested Reading 1
+
+## R Introduction
+[R for Data Science](https://r4ds.had.co.nz/)
+Chapters/ sections, 1, 2, 3.1-3.1.1
+
+
+# R and the ODP
+
+## Getting Data from the ODP
+I find the best way to learn R, or any language is to start with a problem, break it 
+in to pieces and then start tackling from there.  One of the earliest hurdles
+an epidemiologist might have to overcome involves reading data into the environment.
+Usually there a few options and ways to go about this per a language. SAS and R Studio
+both have a point and click gui to read-in data, and they both have options to 
+ingest data programmatically as well. R is generally easier to do this because it is 
+less strict on data type and length, but a good programmer will generally enforce 
+these things anyway.  Today we'll be doing something a little different, since one
+of the goals is to learn the Open Data Portal, we are going to play with data that
+is stored on the open web and pull it down using an Application Programming Interface
+or API.
+  
+  
+## Installing RSocrata Package
+Below is a code chunk showing the installation of the RSocrata Package. For your first
+time installing this, you will want to erase the # and run that line to install the
+package.  
+  
+Below that is the library statement that invokes the use of that package's
+functions for your workflow. We Will make heavy use of the function, _read.socrata()_.
+You can see it in action below, where I pull in publicly released CT Monkey Pox
+Age group data. The ODP let's users do an API callout to pull data into memory.  The 
+URL listed there is the unique API webaddress for that 
+[dataset](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_AgeGroup/bg8t-bfyp).
+
+```{r installing_RSocrata, }
+#install.packages("RSocrata")
+library(RSocrata)
+
+#install.packages("tidyverse")
+library(tidyverse)
+
+
+monkey_pox_agegroups <- 
+  RSocrata::read.socrata(
+    url = "https://data.ct.gov/resource/bg8t-bfyp.json"
+  ) %>% 
+  as_tibble()
+
+
+print(monkey_pox_agegroups)
+
+```
+
+
+## Suggested Reading 2
+### R Visualizations
+[R for Data Science](https://r4ds.had.co.nz/)
+Chapters/ sections 3.2-3.4, skim 3.5, 3.6, skim 3.7-3.10
+
+## Plotting ODP Monkey Pox Data
+
+Armed with the reading above, and the _read.socrata()_ example, please attempt to do
+the following:
+
+* Create  a new .R script
+* Download the MPOX state 
+[data](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_State/qhtt-czu2)
+using the URL "https://data.ct.gov/resource/qhtt-czu2.json" and assign it to a tibble
+* Using the ReportPeriodStart variable for the x-axis and a count on the y axis, 
+please create a bar chart using ggplot2 package 
+(which is part of the tidyverse package) and _geom_bar()_
+
+```{r eval=FALSE, include=FALSE}
+monkey_pox_state_data <- 
+  RSocrata::read.socrata(
+    url = "https://data.ct.gov/resource/qhtt-czu2.json"
+  ) %>% 
+  as_tibble()
+
+
+monkey_pox_state_data %>% 
+  ggplot() +
+  geom_bar(aes(reportperiodstart))
+
+```
+
+
+# DPLYR (The bread and butter of the tidyverse)
+
+## Suggested Reading
+
+* [Quick Overview](https://dplyr.tidyverse.org/) Just read the overview and check out
+the Cheat Sheet
+
+* [Introduction to dplyr](https://dplyr.tidyverse.org/articles/dplyr.html) This whole
+thing is a good overview. Focusing on _filter_, _select_, _rename_, _mutate_ and 
+_summarise_ is a good use of time though.
+
+
+## Approaching a table with SAS and dplyr 
+
+SAS and R approach similar issues from different points of view. I think both are 
+important to know. Languages come and go, and tools can be swapped for others, but
+keeping in mind how one language might tackle a problem and then being able to apply
+it to novel roadblocks or new languages is always helpful. Long story short, in 
+public health you will always strapped for time and/or resources, thinking critically
+and being able to break a problem down into miniature steps like you would in any
+language is possibly the most important lesson of all.  
+  
+In general a SAS workflow might center around a few workhouse functions with many 
+different arguments, whereas R in the tidyverse, will focus around smaller functions
+that has less options, but by doing one thing, you can chain them together in any 
+order.  
+
+SAS PROC FREQ is a good example, out of the box it is a handy little function for 
+looking at counts across groups in data.  Using our monkey_pox_agegroups table
+as an example you might type something like the following in SAS:
+
+(bear with me, my SAS is geting rusty :D)
+
+
+PROC FREQ data = monkey_pox_agegroups;  
+Tables agegroup;  
+Run;  
+
+This would give you a count, a groupwise percent of the whole, a cumulative count, 
+and a cumulative percent.  Not bad for a few lines. If we try to recreate that in R
+using the basic dplyr verbs, it might be a bit more verbose.  However, you might not
+need all the extras, or as you become more advanced and you settle into a more 
+standard approach in your day to day, you might try your hand at creating 
+your own functions and/or starting piping functions into other functions using some 
+other packages.  It's in that sweet spot where you start getting a return on your 
+investment.  But for now, let's use recreating proc freq as a showcase for 
+showing off dplyr verbs.
+
+
+```{r, dplyr showcase}
+#let's take a look at the table structure again
+
+glimpse(monkey_pox_agegroups)
+
+
+#base R might use the str() function instead
+str(monkey_pox_agegroups) #think structure
+ 
+
+#I want a table with counts of age groups, with percents and cumulative counts/percents
+
+desired_output <- 
+  monkey_pox_agegroups %>% 
+  #I want my calculations done per group, in this case agegroup
+  group_by(agegroup) %>% 
+  #this is a counting function, works greeeat with groupby
+  tally(name = "Frequency") %>% 
+  #let's create a new variable
+  #ungrouping because I don't want this donee pere group now
+  mutate(
+    Percent = Frequency/sum(Frequency) * 100, #the sum function works like the SAS one,
+    #and just, like the SAS a NULL value will NULL out the entire output, unless 
+    #otherwise specificed to ignore NULLs or NAs
+    
+    
+    #lets round this, this could be neested up there, but I like readability
+    Percent = round(
+      Percent,
+      digits = 2
+    ),
+    
+    cumulative_frequency = cumsum(Frequency),  #cumulative sum function
+    
+    #nesting here as an example
+    cumulative_percent = round(
+      cumulative_frequency / 
+        sum(cumulative_frequency) * 100,
+      digits = 2
+    )
+  )
+
+desired_output
+```
+
+There is more or less your proc freq output.  Something like this could be tidied up
+and stored into a function you can use over and over again, or another package could
+be used with similar functions etc.... that will be out of the scope of this
+project however.
+
+For now let's pretty that table up to showcase some of the other dplyr verbs like
+select, filter, rename and arrange.
+
+
+```{r, prettyitup}
+pretty_output <- 
+  desired_output %>% 
+  # performance wise, it's often best to filter at the top, lets drop rows
+  #frequency is less than 20
+  filter(Frequency >= 20) %>%  #any row where that statement is TRUE, will be kept
+  #lets just select the first few columns
+  select(
+    agegroup,
+    Frequency,
+    Percent
+  ) %>% 
+  #lets rename agegroup 
+  rename(
+    #format is desired name first, then original var name
+    # use backticks ` for non standard names
+    `Age Group` = agegroup
+  ) %>% 
+  #lets arrange by highest frequeny in the descending ordere
+  arrange(
+    desc(Frequency)
+  )
+  
+pretty_output
+```
+
+## Question
+
+Based on the reading above, can you use the _summarise_ function, and the dataframe: 
+monkey_pox_state_data to tell me which is the least common 'reportperiodend' date?
