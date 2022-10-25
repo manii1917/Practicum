@@ -24,4 +24,3 @@ ggplot(data = monkey_pox_dt) +
   geom_text(aes(x = reportperiodstart, label = ..count..), stat = "count", vjust = 1.5, colour = "white")
 
 
-
