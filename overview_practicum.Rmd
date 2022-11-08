@@ -287,3 +287,34 @@ pretty_output
 
 Based on the reading above, can you use the _summarise_ function, and the dataframe: 
 monkey_pox_state_data to tell me which is the least common 'reportperiodend' date?
+
+# Influenza 
+
+## Overview
+
+Influenza data will be going live to the very tables we have been working with in 
+just a few days.  Respiratory Syncytial Virus(RSV) will likely follow suit, but that
+is more up in the air.  Covid has shifted the seasonal patterns of other respiratory 
+diseases and now many in the public health community are worried about the Covid, Flu
+and RSV coming together to form a "tri-demic". 
+
+Using what we've learned about R, visualizations, the ODP and github we're going to 
+begin to put together a Rmarkdown document (like this one here) that will contain 
+exploratory analyses surrounding ODP data for covid and flu that could be potentially
+useful to public health decision makers. We will also attempt to incorporate signal
+detection methods to see if there is any activity that might be out of the ordinary
+and eventually we will take our findings and distill it down into key takeaways that
+you might try to share with decision makers and stakeholders.
+
+
+### Steps
+* Review of ODP datasets for Covid-19 data (hint, there is a set of new tables and
+a set of old tables)
+* Review the ODP datasets for influenza data and any other publicly available data
+  * If needed, engage with ODP data stewards from the Office of Policy and Management
+  they can also help us comb through all the data to find useful datasets
+* Construct a .rmd with possibly meaningful analyses
+  * we will code what we can, but if there is anything you've learned biostats that 
+  you think might be appropriate, I can work with you to employ those methods and fill
+  in the 'r knowledge gaps'
+* TBD
