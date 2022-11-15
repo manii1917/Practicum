@@ -1,0 +1,54 @@
+---
+  title: "Practicum Project"
+author: "Singh, Manisha"
+guide: "Senetcky, Alexander; Archambault, Gary"
+date: '2022-11-11'
+output:
+  html_document:
+  toc: true # table of content true
+toc_float: true
+toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+number_sections: true  ## if you want number sections at each table header
+theme: united  # many options for theme, this one is my favorite.
+highlight: tango  # specifies the syntax highlighting style
+code_folding: show
+---
+  
+  ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Objectives  
+
+Overview of Covid 19 Data tables  
+  
+* Latest available Covid -19 table is located at https://data.ct.gov/resource/qmgw-5kp6.json
+Basic Explorartion code snippet
+
+```{r installing_RSocrata, }
+#install.packages("RSocrata")
+library(RSocrata)
+#install.packages("tidyverse")
+library(tidyverse)
+latest_covid19_data <- 
+  RSocrata::read.socrata(
+    url = "https://data.ct.gov/resource/qmgw-5kp6.json"
+  ) %>% 
+  as_tibble()
+print(latest_covid19_data)
+```
+* Latest available Influenza table is located at https://data.ct.gov/resource/8d4q-hwjx.json
+Basic Explorartion code snippet
+
+```{r installing_RSocrata, }
+#install.packages("RSocrata")
+library(RSocrata)
+#install.packages("tidyverse")
+library(tidyverse)
+latest_influenza_data <- 
+  RSocrata::read.socrata(
+    url = "https://data.ct.gov/resource/8d4q-hwjx.json"
+  ) %>% 
+  as_tibble()
+print(latest_influenza_data)
+```
