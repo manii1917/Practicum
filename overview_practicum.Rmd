@@ -11,94 +11,104 @@ output:
     theme: united  # many options for theme, this one is my favorite.
     highlight: tango  # specifies the syntax highlighting style
     code_folding: show
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Objectives  
+# Objectives
 
-Over the course of this practicum it is our hopes that our student will be able to
-demonstrate proficiency or an appropriate level of understanding for the following:  
+Over the course of this practicum it is our hopes that our student will
+be able to demonstrate proficiency or an appropriate level of
+understanding for the following:
 
 ## Knowledge based skills
 
-* A working knowledge of the statistical programming language, R, and its
-family of packages known as the 
-[tidyverse](https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/)
+-   A working knowledge of the statistical programming language, R, and
+    its family of packages known as the
+    [tidyverse](https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/)
 
-* A working knowledge of the 
-[R Studio Integrated Development Environment (IDE)](https://www.rstudio.com/products/rstudio/)
+-   A working knowledge of the [R Studio Integrated Development
+    Environment (IDE)](https://www.rstudio.com/products/rstudio/)
 
-* A working knowledge of using R to query Star-model based data housed within
-SQL databases 
+-   A working knowledge of using R to query Star-model based data housed
+    within SQL databases
 
-* A working knowledge of Connecticut's 
-[Open Data Portal](https://data.ct.gov/)(ODP)
+-   A working knowledge of Connecticut's [Open Data
+    Portal](https://data.ct.gov/)(ODP)
 
-* A basic understanding of Devops and AGILE workflows within the Azure DevOps tool
+-   A basic understanding of Devops and AGILE workflows within the Azure
+    DevOps tool
 
-* A basic understanding of Git, a distributed source control
+-   A basic understanding of Git, a distributed source control
 
-## Project based Outcomes 
+## Project based Outcomes
 
-* An ODP data product that will more easily serve the public a tabular version 
-of the data found on DPH's [Infectious Diseases Statistics page](https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
-
-
+-   An ODP data product that will more easily serve the public a tabular
+    version of the data found on DPH's [Infectious Diseases Statistics
+    page](https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
 
 # Timeline
 
 ## Getting set up
-1. Getting Access to our developer environment and star model
-1. R + R Studio Bootcamp
-1. Git crashcourse
-1. R usescases at the DPH
+
+1.  Getting Access to our developer environment and star model
+2.  R + R Studio Bootcamp
+3.  Git crashcourse
+4.  R usescases at the DPH
 
 ## Project Development
-1. Primer on working in Azure Devops - primarily git focused
-1. Overview of the data on [Infectious Diseases Statistics page](https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
-    1. Pros and Cons - how do we think we can make it better
-1. Pulling the data from the star model
-1. Comparing the data from the star model to previous public releases
-1. Creating a script that can be the basis of our automation that will move data
-from the star model to the ODP for public consumption
 
+1.  Primer on working in Azure Devops - primarily git focused
+2.  Overview of the data on [Infectious Diseases Statistics
+    page](https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
+    1.  Pros and Cons - how do we think we can make it better
+3.  Pulling the data from the star model
+4.  Comparing the data from the star model to previous public releases
+5.  Creating a script that can be the basis of our automation that will
+    move data from the star model to the ODP for public consumption
 
 # Suggested Reading 1
 
 ## R Introduction
-[R for Data Science](https://r4ds.had.co.nz/)
-Chapters/ sections, 1, 2, 3.1-3.1.1
 
+[R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections, 1, 2,
+3.1-3.1.1
 
 # R and the ODP
 
 ## Getting Data from the ODP
-I find the best way to learn R, or any language is to start with a problem, break it 
-in to pieces and then start tackling from there.  One of the earliest hurdles
-an epidemiologist might have to overcome involves reading data into the environment.
-Usually there a few options and ways to go about this per a language. SAS and R Studio
-both have a point and click gui to read-in data, and they both have options to 
-ingest data programmatically as well. R is generally easier to do this because it is 
-less strict on data type and length, but a good programmer will generally enforce 
-these things anyway.  Today we'll be doing something a little different, since one
-of the goals is to learn the Open Data Portal, we are going to play with data that
-is stored on the open web and pull it down using an Application Programming Interface
-or API.
-  
-  
+
+I find the best way to learn R, or any language is to start with a
+problem, break it in to pieces and then start tackling from there. One
+of the earliest hurdles an epidemiologist might have to overcome
+involves reading data into the environment. Usually there a few options
+and ways to go about this per a language. SAS and R Studio both have a
+point and click gui to read-in data, and they both have options to
+ingest data programmatically as well. R is generally easier to do this
+because it is less strict on data type and length, but a good programmer
+will generally enforce these things anyway. Today we'll be doing
+something a little different, since one of the goals is to learn the
+Open Data Portal, we are going to play with data that is stored on the
+open web and pull it down using an Application Programming Interface or
+API.
+
 ## Installing RSocrata Package
-Below is a code chunk showing the installation of the RSocrata Package. For your first
-time installing this, you will want to erase the # and run that line to install the
-package.  
-  
-Below that is the library statement that invokes the use of that package's
-functions for your workflow. We Will make heavy use of the function, _read.socrata()_.
-You can see it in action below, where I pull in publicly released CT Monkey Pox
-Age group data. The ODP let's users do an API callout to pull data into memory.  The 
-URL listed there is the unique API webaddress for that 
+
+Below is a code chunk showing the installation of the RSocrata Package.
+For your first time installing this, you will want to erase the \# and
+run that line to install the package.
+
+Below that is the library statement that invokes the use of that
+package's functions for your workflow. We Will make heavy use of the
+function, *read.socrata()*. You can see it in action below, where I pull
+in publicly released CT Monkey Pox Age group data. The ODP let's users
+do an API callout to pull data into memory. The URL listed there is the
+unique API webaddress for that
 [dataset](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_AgeGroup/bg8t-bfyp).
 
 ```{r installing_RSocrata, }
@@ -120,24 +130,26 @@ print(monkey_pox_agegroups)
 
 ```
 
-
 ## Suggested Reading 2
+
 ### R Visualizations
-[R for Data Science](https://r4ds.had.co.nz/)
-Chapters/ sections 3.2-3.4, skim 3.5, 3.6, skim 3.7-3.10
+
+[R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections
+3.2-3.4, skim 3.5, 3.6, skim 3.7-3.10
 
 ## Plotting ODP Monkey Pox Data
 
-Armed with the reading above, and the _read.socrata()_ example, please attempt to do
-the following:
+Armed with the reading above, and the *read.socrata()* example, please
+attempt to do the following:
 
-* Create  a new .R script
-* Download the MPOX state 
-[data](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_State/qhtt-czu2)
-using the URL "https://data.ct.gov/resource/qhtt-czu2.json" and assign it to a tibble
-* Using the ReportPeriodStart variable for the x-axis and a count on the y axis, 
-please create a bar chart using ggplot2 package 
-(which is part of the tidyverse package) and _geom_bar()_
+-   Create a new .R script
+-   Download the MPOX state
+    [data](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_State/qhtt-czu2)
+    using the URL "<https://data.ct.gov/resource/qhtt-czu2.json>" and
+    assign it to a tibble
+-   Using the ReportPeriodStart variable for the x-axis and a count on
+    the y axis, please create a bar chart using ggplot2 package (which
+    is part of the tidyverse package) and *geom_bar()*
 
 ```{r eval=FALSE, include=FALSE}
 monkey_pox_state_data <- 
@@ -153,55 +165,55 @@ monkey_pox_state_data %>%
 
 ```
 
-
 # DPLYR (The bread and butter of the tidyverse)
 
 ## Suggested Reading
 
-* [Quick Overview](https://dplyr.tidyverse.org/) Just read the overview and check out
-the Cheat Sheet
+-   [Quick Overview](https://dplyr.tidyverse.org/) Just read the
+    overview and check out the Cheat Sheet
 
-* [Introduction to dplyr](https://dplyr.tidyverse.org/articles/dplyr.html) This whole
-thing is a good overview. Focusing on _filter_, _select_, _rename_, _mutate_ and 
-_summarise_ is a good use of time though.
+-   [Introduction to
+    dplyr](https://dplyr.tidyverse.org/articles/dplyr.html) This whole
+    thing is a good overview. Focusing on *filter*, *select*, *rename*,
+    *mutate* and *summarise* is a good use of time though.
 
+## Approaching a table with SAS and dplyr
 
-## Approaching a table with SAS and dplyr 
+SAS and R approach similar issues from different points of view. I think
+both are important to know. Languages come and go, and tools can be
+swapped for others, but keeping in mind how one language might tackle a
+problem and then being able to apply it to novel roadblocks or new
+languages is always helpful. Long story short, in public health you will
+always strapped for time and/or resources, thinking critically and being
+able to break a problem down into miniature steps like you would in any
+language is possibly the most important lesson of all.
 
-SAS and R approach similar issues from different points of view. I think both are 
-important to know. Languages come and go, and tools can be swapped for others, but
-keeping in mind how one language might tackle a problem and then being able to apply
-it to novel roadblocks or new languages is always helpful. Long story short, in 
-public health you will always strapped for time and/or resources, thinking critically
-and being able to break a problem down into miniature steps like you would in any
-language is possibly the most important lesson of all.  
-  
-In general a SAS workflow might center around a few workhouse functions with many 
-different arguments, whereas R in the tidyverse, will focus around smaller functions
-that has less options, but by doing one thing, you can chain them together in any 
-order.  
+In general a SAS workflow might center around a few workhouse functions
+with many different arguments, whereas R in the tidyverse, will focus
+around smaller functions that has less options, but by doing one thing,
+you can chain them together in any order.
 
-SAS PROC FREQ is a good example, out of the box it is a handy little function for 
-looking at counts across groups in data.  Using our monkey_pox_agegroups table
-as an example you might type something like the following in SAS:
+SAS PROC FREQ is a good example, out of the box it is a handy little
+function for looking at counts across groups in data. Using our
+monkey_pox_agegroups table as an example you might type something like
+the following in SAS:
 
 (bear with me, my SAS is geting rusty :D)
 
+PROC FREQ data = monkey_pox_agegroups;\
+Tables agegroup;\
+Run;
 
-PROC FREQ data = monkey_pox_agegroups;  
-Tables agegroup;  
-Run;  
-
-This would give you a count, a groupwise percent of the whole, a cumulative count, 
-and a cumulative percent.  Not bad for a few lines. If we try to recreate that in R
-using the basic dplyr verbs, it might be a bit more verbose.  However, you might not
-need all the extras, or as you become more advanced and you settle into a more 
-standard approach in your day to day, you might try your hand at creating 
-your own functions and/or starting piping functions into other functions using some 
-other packages.  It's in that sweet spot where you start getting a return on your 
-investment.  But for now, let's use recreating proc freq as a showcase for 
-showing off dplyr verbs.
-
+This would give you a count, a groupwise percent of the whole, a
+cumulative count, and a cumulative percent. Not bad for a few lines. If
+we try to recreate that in R using the basic dplyr verbs, it might be a
+bit more verbose. However, you might not need all the extras, or as you
+become more advanced and you settle into a more standard approach in
+your day to day, you might try your hand at creating your own functions
+and/or starting piping functions into other functions using some other
+packages. It's in that sweet spot where you start getting a return on
+your investment. But for now, let's use recreating proc freq as a
+showcase for showing off dplyr verbs.
 
 ```{r, dplyr showcase}
 #let's take a look at the table structure again
@@ -248,14 +260,13 @@ desired_output <-
 desired_output
 ```
 
-There is more or less your proc freq output.  Something like this could be tidied up
-and stored into a function you can use over and over again, or another package could
-be used with similar functions etc.... that will be out of the scope of this
-project however.
+There is more or less your proc freq output. Something like this could
+be tidied up and stored into a function you can use over and over again,
+or another package could be used with similar functions etc.... that
+will be out of the scope of this project however.
 
-For now let's pretty that table up to showcase some of the other dplyr verbs like
-select, filter, rename and arrange.
-
+For now let's pretty that table up to showcase some of the other dplyr
+verbs like select, filter, rename and arrange.
 
 ```{r, prettyitup}
 pretty_output <- 
@@ -285,36 +296,153 @@ pretty_output
 
 ## Question
 
-Based on the reading above, can you use the _summarise_ function, and the dataframe: 
-monkey_pox_state_data to tell me which is the least common 'reportperiodend' date?
+Based on the reading above, can you use the *summarise* function, and
+the dataframe: monkey_pox_state_data to tell me which is the least
+common 'reportperiodend' date?
 
-# Influenza 
+# Influenza
 
 ## Overview
 
-Influenza data will be going live to the very tables we have been working with in 
-just a few days.  Respiratory Syncytial Virus(RSV) will likely follow suit, but that
-is more up in the air.  Covid has shifted the seasonal patterns of other respiratory 
-diseases and now many in the public health community are worried about the Covid, Flu
-and RSV coming together to form a "tri-demic". 
+Influenza data will be going live to the very tables we have been
+working with in just a few days. Respiratory Syncytial Virus(RSV) will
+likely follow suit, but that is more up in the air. Covid has shifted
+the seasonal patterns of other respiratory diseases and now many in the
+public health community are worried about the Covid, Flu and RSV coming
+together to form a "tri-demic".
 
-Using what we've learned about R, visualizations, the ODP and github we're going to 
-begin to put together a Rmarkdown document (like this one here) that will contain 
-exploratory analyses surrounding ODP data for covid and flu that could be potentially
-useful to public health decision makers. We will also attempt to incorporate signal
-detection methods to see if there is any activity that might be out of the ordinary
-and eventually we will take our findings and distill it down into key takeaways that
-you might try to share with decision makers and stakeholders.
-
+Using what we've learned about R, visualizations, the ODP and github
+we're going to begin to put together a Rmarkdown document (like this one
+here) that will contain exploratory analyses surrounding ODP data for
+covid and flu that could be potentially useful to public health decision
+makers. We will also attempt to incorporate signal detection methods to
+see if there is any activity that might be out of the ordinary and
+eventually we will take our findings and distill it down into key
+takeaways that you might try to share with decision makers and
+stakeholders.
 
 ### Steps
-* Review of ODP datasets for Covid-19 data (hint, there is a set of new tables and
-a set of old tables)
-* Review the ODP datasets for influenza data and any other publicly available data
-  * If needed, engage with ODP data stewards from the Office of Policy and Management
-  they can also help us comb through all the data to find useful datasets
-* Construct a .rmd with possibly meaningful analyses
-  * we will code what we can, but if there is anything you've learned biostats that 
-  you think might be appropriate, I can work with you to employ those methods and fill
-  in the 'r knowledge gaps'
-* TBD
+
+-   Review of ODP datasets for Covid-19 data (hint, there is a set of
+    new tables and a set of old tables)
+-   Review the ODP datasets for influenza data and any other publicly
+    available data
+    -   If needed, engage with ODP data stewards from the Office of
+        Policy and Management they can also help us comb through all the
+        data to find useful datasets
+-   Construct a .rmd with possibly meaningful analyses
+    -   we will code what we can, but if there is anything you've
+        learned biostats that you think might be appropriate, I can work
+        with you to employ those methods and fill in the 'r knowledge
+        gaps'
+-   TBD
+
+## What is Meaningful?
+
+In public health and specifically with infectious disease you'll often
+be asking yourself what is a meaningful burden of disease where you can
+and should take action. This can be a difficult to assess. Pretend for a
+moment that you are an epidemiologist working for the Hartford Health
+Department and your local health director tells you that there are 500
+cases of disease X in the city and asks you if this is something we
+should be monitoring.
+
+-   What might you be prepared to say?
+
+-   What kinds of questions are you asking yourself?
+
+-   What kinds of questions do you have for the health director?
+
+We discussed some of these questions on 11/30/2022 and you brought up
+some great points about getting down to as granular a level as possible
+in the data. You mentioned looking at the different demographics and the
+zipcodes if possible. In your recent SAS project you described how you
+compared different years from the YRBBS survey data. using one year as a
+baseline and then comparing the counts. You also talked about how you
+used visualizations to compare trends overtime. We both talked about the
+severity of the disease and how that can come into play, and how certain
+aspects may make data collection difficult.
+
+These are all valid strategies and points to mull over; and you will
+often combine many different tools/strategies/thought processes to pull
+out signals from all the noise. One strategy I was trying to tease out
+if attempted or not with the YRBBS data was if you tried any kind of
+standardization. It was briefly mentioned how you looked that the YRBBS
+sampling strategy to see if there was any oversampling etc... but I
+really wanted to see if it was possible that you tried comparing rates.
+I don't know if you had the luxury of having population denominators,
+but using those to look at incidence and/or age adjusted rates are other
+tools you can use to see if there are true differences between groups or
+determine whether or not a jump in counts might be a due to a change in
+population or is a spike in disease. If you haven't already, you will
+perform a direct and/or indirect adjustment in either your stats or epi
+class.
+
+## Signal Detection
+
+Let's discuss something we've alluded to many times in our previous
+conversations but haven't quite covered, and that is signal detection.
+This is just one take at it and is more helpful when you are counting
+something with high numbers, like syndromic surveillance data. Many of
+the signal detection maths are borrowed from engineering methods for
+quality assurance processes. A few of which were assessed for outbreak
+detection one such
+[paper](https://wwwnc.cdc.gov/eid/article/26/9/19-1315_article). Methods
+such as those, and others that are a little more manual/ad hoc have been
+used to act quickly in public health emergencies as seen
+[here](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7367072/). You might
+know a few of those authors :)
+
+Using an exponentially weighted moving average (EMA or EWMA) is one such
+method we have used in the past. Without getting into the details just
+yet, these methods will often boil down to basically comparing a
+baseline count of what was expected for a given day, based on past
+information to what actually happened, and then flag days that go beyond
+a certain threshold that the user sets. In engineering, a factory might
+be producing many thousands of products so they have the luxury of
+pulling random samples and working with their means. In public health we
+often have count data and often times much smaller numbers so we have to
+adjust the way we do business.
+
+Using a statistical method to detect events of interest allows public
+health workers to looks at huge swathes of data of all kinds of
+different diseases and flag anything based on numbers alone. It's
+repeatable and efficient and is good at casting a wide net. However, it
+can lead to false positives based on what kind of data you are using,
+and what kind of thresholds you are setting. Depending on the use case,
+this can be acceptable if it saves time and money by preventing staff
+from combing through rows and rows of raw data and it can possibly set
+public health to quickly pivot and act in certain situations.
+
+### Thought Exercise
+
+Think about what kinds of data and/or diseases might be good fits for
+using algorithmic signal detection.
+
+-   What do they have in common?
+
+-   How are they different?
+
+-   Are there any data streams you came across in your mental health
+    data project from the other course that might be good to use with
+    algorithmic signal detection?
+
+    -   Why are they, or aren't they a good fit?
+
+    -   Assume for a moment you have a perfect data set, what kind of
+        event might a 'mental health' signal correspond to in real life?
+
+    -   Is this signal something public health can respond to in the
+        short term or long term?
+
+-   Pretend you have the perfect data set and you find something right
+    now you can act on, think about how you want to mobilize your
+    partners and stakeholders.
+
+    -   How would you like to take advantage of this timely information
+        to communicate to the public?
+
+    -   How do approach leadership and explain to them how serious this
+        situation is and what you can do to help?
+
+## Nitty Gritty
