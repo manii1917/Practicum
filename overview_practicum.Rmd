@@ -487,6 +487,7 @@ state_counts <-
   select(date, total_cases) %>% 
   #creating SMA Prediction, it's lagged so the prediction is for the next day
   mutate(
+    total_cases = as.numeric(total_cases),
     SMA = lag(
       round(
         x = pracma::movavg(
@@ -504,5 +505,48 @@ state_counts <-
   ) %>% 
   filter(!is.na(SMA)) %>%  #dropping NA SMA, can't make one for first day of period, but the first week of data is just 0's for everyone anyway
   mutate(residuals = total_cases - SMA) #prediction errors or residuals
+
+
+#next part uses some ugly base R matrix-y stuff that the function expects
+state_counts$residual_std <- 
+  roll::roll_sd(
+    matrix(
+      state_counts$residuals
+    ),
+    SDROLL
+  )
+
+# we can then smooth out prediction errors using an exponentially weighted moving average, EMA or EWMA to heavily weight the more recent errors (when compared to those at the beginning of the week)
+#and then we can set thresholds to see if there are spikes we care about
+
+state_counts <- 
+  state_counts %>% 
+    filter(!is.na(residual_std)) %>% #dropping NA residual_std as we have that buffer and the mean just looks weird here
+    mutate(
+      #EMA of the SDs of the residuals
+      EMA_sd = lag(
+        round(
+         x = movavg(
+            x = residual_std, 
+            n = EMADAYS, 
+              type = "e" #for rolling exponential weighting
+          ), 
+          digits = 3
+        )
+      )
+    ) %>% 
+  #setting thresholds
+  #2,3,4 have always served me well
+  #any count for a given day that is 
+  #the prediction + 2 thru 4 times the smooth  weight errors 
+  #is an outlier we might want to look at
+    mutate(
+      threshold4 = SMA + (4*EMA_sd),
+      threshold3 = SMA + (3*EMA_sd),
+      threshold2 = SMA + (2*EMA_sd)
+    ) %>%
+    filter(!is.na(EMA_sd))
+
+
 
 ```
