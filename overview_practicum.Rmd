@@ -446,3 +446,63 @@ using algorithmic signal detection.
         situation is and what you can do to help?
 
 ## Nitty Gritty
+
+The next few chunks of code are going to be ugly, and will need alot of
+refinement, but you'll be able to get the picture if you follow along.
+
+We're going to try this with Covid data, but then you're going to
+attempt this on a novel timeseries.
+
+```{r extra_libraries}
+
+#install these
+library(pracma) #for maths
+library(roll) #for rolling mathematical functions
+library(leaflet) #for mapping
+
+```
+
+```{r lets_roll}
+SMADAYS <- 7 # number of days for the simple moving average
+EMADAYS <- 7# number of days for Exponentially weighted moving average
+SDROLL <- 7  # number of days for the rolling Standard Deviation of errors
+
+covid_19_epicurve <- 
+  read.socrata("https://data.ct.gov/resource/g9vi-2ahj.json") %>% 
+  as_tibble()
+
+
+```
+
+#### Creating a baseline
+
+Baselines can be complex, or simple. Sometimes it's best to pick
+something you can easily explain, like a simple moving average (SMA) and
+then go from there when you are explaining things to someone else.
+
+```{r baseline}
+
+state_counts <- 
+  covid_19_epicurve %>% 
+  select(date, total_cases) %>% 
+  #creating SMA Prediction, it's lagged so the prediction is for the next day
+  mutate(
+    SMA = lag(
+      round(
+        x = pracma::movavg(
+          x = total_cases, 
+          n = SMADAYS, 
+          type = "s" #for simple moving average
+        ),
+        digits = 3
+      )
+    ),
+    #residuals are prediction errors, we're going to take
+    #the standard deviation on a rolling basis
+    #setting to 0 initially
+    residual_std = 0
+  ) %>% 
+  filter(!is.na(SMA)) %>%  #dropping NA SMA, can't make one for first day of period, but the first week of data is just 0's for everyone anyway
+  mutate(residuals = total_cases - SMA) #prediction errors or residuals
+
+```
