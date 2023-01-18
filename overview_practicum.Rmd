@@ -550,3 +550,30 @@ state_counts <-
 
 
 ```
+
+```{r barf}
+#TODO: CLEAN THIS UP ALEX
+town_ema <- ggplot(town_counts[town_counts$city == cities[i],], aes(date, n))+
+  geom_line() +
+  geom_line(aes(date, threshold4), col = "orange" )+
+  geom_line(aes(date, threshold3), col = "darkturquoise" )+
+  geom_line(aes(date, threshold2), col = "blue" )+ 
+  #geom_line(aes(date, SMA), col = "red") +
+  geom_point(data = town_counts_highlights4[town_counts_highlights4$city == cities[i],], aes(date, n), col = "orange", size = 3) +
+  geom_point(data = town_counts_highlights3[town_counts_highlights3$city == cities[i],], aes(date, n), col = "darkturquoise", size = 3) +
+  geom_point(data = town_counts_highlights2[town_counts_highlights2$city == cities[i],], aes(date, n), col = "blue", size = 3) +
+  geom_label(data = subset(town_counts_text4, town_counts_text4$city == cities[i]), aes(x = ymd(mindate), y = max(town_counts$n[town_counts$city == cities[i]]+6), label =n), col = "white", fill = "orange", fontface = "bold")+
+  geom_label(data = subset(town_counts_text3, town_counts_text3$city == cities[i]), aes(x = ymd(mindate)+10, y = max(town_counts$n[town_counts$city == cities[i]]+6), label = n), col = "white",fill = "darkturquoise", fontface = "bold")+
+  geom_label(data = subset(town_counts_text2, town_counts_text2$city == cities[i]), aes(x = ymd(mindate)+20, y = max(town_counts$n[town_counts$city == cities[i]]+6), label = n), col = "white",fill = "blue", fontface = "bold")+
+  scale_x_date(date_breaks = "2 weeks")+
+  scale_y_continuous(breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
+  theme_dark()+
+  theme(axis.text.x=element_text(angle=45,hjust=1))+
+  labs(
+    title = paste0("CT City ",  cities[i], " EMA Alerts with {2,3,4}*SD Threshold"),
+    x = "Date",
+    y = "Count",
+    caption = paste0(mindate, " - ", maxdate)
+  )
+
+```
