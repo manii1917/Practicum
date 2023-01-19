@@ -119,6 +119,7 @@ library(RSocrata)
 library(tidyverse)
 
 
+
 monkey_pox_agegroups <- 
   RSocrata::read.socrata(
     url = "https://data.ct.gov/resource/bg8t-bfyp.json"
@@ -378,7 +379,7 @@ population or is a spike in disease. If you haven't already, you will
 perform a direct and/or indirect adjustment in either your stats or epi
 class.
 
-## Signal Detection
+## Signal Detection -  A Covid-19 example
 
 Let's discuss something we've alluded to many times in our previous
 conversations but haven't quite covered, and that is signal detection.
@@ -459,6 +460,7 @@ attempt this on a novel timeseries.
 library(pracma) #for maths
 library(roll) #for rolling mathematical functions
 library(leaflet) #for mapping
+library(lubridate) #package for making working with dates super easy
 
 ```
 
@@ -474,11 +476,16 @@ covid_19_epicurve <-
 
 ```
 
-#### Creating a baseline
+#### Creating a baseline and thresholds
 
 Baselines can be complex, or simple. Sometimes it's best to pick
 something you can easily explain, like a simple moving average (SMA) and
 then go from there when you are explaining things to someone else.
+
+After we make our baseline, which is just an educated guess, we want to
+see how far away our *actual* values are from the guess. The magnitude
+of the errors will help us determine how far away from baseline we are
+and if we care.
 
 ```{r baseline}
 
@@ -488,7 +495,8 @@ state_counts <-
   #creating SMA Prediction, it's lagged so the prediction is for the next day
   mutate(
     total_cases = as.numeric(total_cases),
-    SMA = lag(
+    date = lubridate::as_date(date),
+    baseline_SMA = lag(
       round(
         x = pracma::movavg(
           x = total_cases, 
@@ -499,12 +507,12 @@ state_counts <-
       )
     ),
     #residuals are prediction errors, we're going to take
-    #the standard deviation on a rolling basis
+    #the standard deviation of these on a rolling basis
     #setting to 0 initially
     residual_std = 0
   ) %>% 
-  filter(!is.na(SMA)) %>%  #dropping NA SMA, can't make one for first day of period, but the first week of data is just 0's for everyone anyway
-  mutate(residuals = total_cases - SMA) #prediction errors or residuals
+  filter(!is.na(baseline_SMA)) %>%  #dropping NA SMA, can't make one for first day of period, but the first week of data is just 0's for everyone anyway
+  mutate(residuals = total_cases - baseline_SMA) #prediction errors or residuals
 
 
 #next part uses some ugly base R matrix-y stuff that the function expects
@@ -541,9 +549,9 @@ state_counts <-
   #the prediction + 2 thru 4 times the smooth  weight errors 
   #is an outlier we might want to look at
     mutate(
-      threshold4 = SMA + (4*EMA_sd),
-      threshold3 = SMA + (3*EMA_sd),
-      threshold2 = SMA + (2*EMA_sd)
+      threshold4 = baseline_SMA + (4 * EMA_sd),
+      threshold3 = baseline_SMA + (3 * EMA_sd),
+      threshold2 = baseline_SMA + (2 * EMA_sd)
     ) %>%
     filter(!is.na(EMA_sd))
 
@@ -551,29 +559,101 @@ state_counts <-
 
 ```
 
-```{r barf}
-#TODO: CLEAN THIS UP ALEX
-town_ema <- ggplot(town_counts[town_counts$city == cities[i],], aes(date, n))+
-  geom_line() +
-  geom_line(aes(date, threshold4), col = "orange" )+
-  geom_line(aes(date, threshold3), col = "darkturquoise" )+
-  geom_line(aes(date, threshold2), col = "blue" )+ 
-  #geom_line(aes(date, SMA), col = "red") +
-  geom_point(data = town_counts_highlights4[town_counts_highlights4$city == cities[i],], aes(date, n), col = "orange", size = 3) +
-  geom_point(data = town_counts_highlights3[town_counts_highlights3$city == cities[i],], aes(date, n), col = "darkturquoise", size = 3) +
-  geom_point(data = town_counts_highlights2[town_counts_highlights2$city == cities[i],], aes(date, n), col = "blue", size = 3) +
-  geom_label(data = subset(town_counts_text4, town_counts_text4$city == cities[i]), aes(x = ymd(mindate), y = max(town_counts$n[town_counts$city == cities[i]]+6), label =n), col = "white", fill = "orange", fontface = "bold")+
-  geom_label(data = subset(town_counts_text3, town_counts_text3$city == cities[i]), aes(x = ymd(mindate)+10, y = max(town_counts$n[town_counts$city == cities[i]]+6), label = n), col = "white",fill = "darkturquoise", fontface = "bold")+
-  geom_label(data = subset(town_counts_text2, town_counts_text2$city == cities[i]), aes(x = ymd(mindate)+20, y = max(town_counts$n[town_counts$city == cities[i]]+6), label = n), col = "white",fill = "blue", fontface = "bold")+
-  scale_x_date(date_breaks = "2 weeks")+
-  scale_y_continuous(breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
-  theme_dark()+
-  theme(axis.text.x=element_text(angle=45,hjust=1))+
-  labs(
-    title = paste0("CT City ",  cities[i], " EMA Alerts with {2,3,4}*SD Threshold"),
-    x = "Date",
-    y = "Count",
-    caption = paste0(mindate, " - ", maxdate)
+#### Plotting our data, thresholds and hotspots
+
+```{r looking_athotspots}
+
+#this is a bit verbose, and could be cleaned up with a case_when() or two, but lets keep it simple
+
+#I want to highlight days that shot past the expected number by our 
+#3 tresholds and I want lines to show the threshold for the days
+
+state_counts_forplot <- 
+  state_counts %>% 
+  mutate(
+    t2highlight = if_else(
+      total_cases > threshold2, 
+      total_cases, 
+      NA_real_
+    ),
+    t3highlight = if_else(
+      total_cases >= threshold3, 
+      total_cases, 
+      NA_real_
+    ),
+    t4highlight = if_else(
+      total_cases >= threshold4, 
+      total_cases, 
+      NA_real_
+    ),
+    t2highlight = if_else(
+      !is.na(t3highlight),
+      NA_real_,
+      t2highlight
+    ),
+    t3highlight = if_else(
+      !is.na(t4highlight),
+      NA_real_,
+      t3highlight
+    )
   )
 
+
+#lets take a look
+
+ggplot(state_counts_forplot, aes(date, total_cases)) +
+  geom_line() +
+  geom_line(aes(date, threshold4), col = "orange") +
+  geom_line(aes(date, threshold3), col = "darkturquoise") +
+  geom_line(aes(date, threshold2), col = "blue") +
+  geom_point(aes(date, t4highlight), col = "orange", size = 1.0) +
+  geom_point(aes(date, t3highlight), col = "darkturquoise", size = 1.5) +
+  geom_point(aes(date, t2highlight), col = "orange", size = 2) +
+  theme_dark() + 
+  labs(
+    x = "Date",
+    y = "Number of Cases",
+    title = "Covid-19 Confirmed and Probable Cases Hotspots"
+  )
+  
+
+
+
 ```
+
+#### What do you notice?
+
+Look at the threshold lines, what do you notice? What happens to them
+during a peak, during quiet times? What does this mean for false alarms
+during peaks or "off-season" times?
+
+Look at the dots, where do they tend to congregate in relation to the
+peaks, are all the does helpful? Too early or too late? Think about if
+these hypothetical alarms were raised, would it buy us enough time to do
+anything?
+
+## Exercise: Back to Influenza
+
+Since we've started this our mpox ODP table now has become a more
+general table with other diseases in it. One such disease is our friend,
+Influenza. Using a related table found here: [Reportable Cases on the
+ODP](https://data.ct.gov/Health-and-Human-Services/Connecticut-Reportable-Disease-Case-List/qhtt-czu2)
+please pull the data down, filter to Influenza cases and practice what
+we did above on this table.
+
+You'll notice that these data are not by day, please use report period
+start as your "date". Since these are already weeks we'll want to be
+careful how we interpret these data. How might we want to change
+EMADAYS, SDSROLL, and SMADAYS? Play around with making changes these
+values and see what happens.
+
+Add your code to a chunk below this paragraph. I want to see your data
+wrangling, and a plot like the one above. Please let me know what you
+find, and be prepared to answer the following:
+
+-   Is this method appropriate for these data, why or why not?
+
+-   And what, if any, adjustments did you have to make?
+
+-   Is there another baseline we could've used for Flu or Covid, that
+    may or may not be based on the datasets available?
