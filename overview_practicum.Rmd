@@ -379,7 +379,7 @@ population or is a spike in disease. If you haven't already, you will
 perform a direct and/or indirect adjustment in either your stats or epi
 class.
 
-## Signal Detection -  A Covid-19 example
+## Signal Detection - A Covid-19 example
 
 Let's discuss something we've alluded to many times in our previous
 conversations but haven't quite covered, and that is signal detection.
@@ -657,3 +657,69 @@ find, and be prepared to answer the following:
 
 -   Is there another baseline we could've used for Flu or Covid, that
     may or may not be based on the datasets available?
+
+## Simple Linear Regression
+
+### setup
+
+```{r}
+library(broom)
+library(ggfortify)
+
+#PHQ-9* Questionnaire for Depression Scoring and Interpretation 
+##Minimal depression 0-4
+##Mild depression 5-9
+##Moderate depression 10-14
+##Moderately severe depression 15-19
+##Severe depression 20-27
+
+
+#GAD-7 (General Anxiety Disorder-7)
+##0-7 no anxiety disorder
+##8+ probable anxiety disorder
+
+
+#Beck's Depression Inventory
+##1-10 These ups and downs are considered normal 
+##11-16 Mild mood disturbance 
+##17-20 Borderline clinical depression 
+##21-30 Moderate depression 
+##31-40 Severe depression 
+##over 40 Extreme depression
+
+fake_depression_scale_scores <- 
+  iris %>% 
+  as_tibble() %>% 
+  summarize(
+    PHQ9 = log(Sepal.Length^12), 
+    GAD7 = round(Petal.Length + 1.5),
+    BDI = round(Petal.Width^4.1),
+    DEPRESSION_STATUS = case_when(
+      Species == "setosa" ~ "Not Depressed",
+      Species == "versicolor" 
+       ~ "Other Specified Depressive Disorder",
+      Species == "virginica" ~ "Major Depressive Disorder"
+    )
+  )
+
+
+
+
+
+```
+
+```{r}
+
+
+ggplot(fake_depression_scale_scores, aes(PHQ9, GAD7)) +
+  geom_point()
+
+
+ggplot(fake_depression_scale_scores, aes(PHQ9, BDI)) +
+  geom_point()
+
+ggplot(fake_depression_scale_scores, aes(GAD7, BDI)) +
+  geom_point()
+
+
+```
