@@ -658,13 +658,14 @@ find, and be prepared to answer the following:
 -   Is there another baseline we could've used for Flu or Covid, that
     may or may not be based on the datasets available?
 
-## Simple Linear Regression
+## Quick and dirty Simple Linear Regression
 
 ### setup
 
 ```{r}
 library(broom)
 library(ggfortify)
+library(modelr)
 
 #PHQ-9* Questionnaire for Depression Scoring and Interpretation 
 ##Minimal depression 0-4
@@ -689,9 +690,8 @@ library(ggfortify)
 
 fake_depression_scale_scores <- 
   iris %>% 
-  as_tibble() %>% 
   summarize(
-    PHQ9 = log(Sepal.Length^12), 
+    PHQ9 = round(log(Sepal.Length^12)), 
     GAD7 = round(Petal.Length + 1.5),
     BDI = round(Petal.Width^4.1),
     DEPRESSION_STATUS = case_when(
@@ -700,8 +700,8 @@ fake_depression_scale_scores <-
        ~ "Other Specified Depressive Disorder",
       Species == "virginica" ~ "Major Depressive Disorder"
     )
-  )
-
+  ) %>% 
+  rowid_to_column()
 
 
 
@@ -722,4 +722,67 @@ ggplot(fake_depression_scale_scores, aes(GAD7, BDI)) +
   geom_point()
 
 
+#how well is PHQ9 depression explained by GAD7
+
+phq9_gad7_model <- 
+  lm(PHQ9 ~ GAD7, data = fake_depression_scale_scores)
+
+summary(phq9_gad7_model)
+
+broom::glance(phq9_gad7_model)
+
+#PHQ9 score = 16.694 + 0.83*GAD7
+
+#put what you are are predicting on the y axis, the explanatory variable on the x axis
+
+ggplot(fake_depression_scale_scores, aes(GAD7, PHQ9)) +
+  geom_jitter() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
+
 ```
+
+```{r}
+set.seed(1312023)
+
+train <- 
+  fake_depression_scale_scores %>% 
+  slice_sample(prop = .33, replace = FALSE)
+  
+test <- 
+  fake_depression_scale_scores %>% 
+  filter(!rowid %in% train$rowid)
+
+
+bdi_model <- lm(PHQ9 ~ BDI , data = train)
+
+predictions <- predict(bdi_model, test)
+
+with_pred <- 
+  bind_cols(test, predictions)
+
+
+  ggplot(data = with_pred ) +
+  geom_jitter(aes(BDI, PHQ9)) +
+  geom_smooth(aes(BDI, PHQ9), method = "lm", se = FALSE) +
+  geom_point(aes(BDI, predictions), size  = 2, color = "orange",
+             fill = "orange" , shape = 21) +
+  theme_bw()
+  
+  #think about why our prediction are different that the blue best fit line (using linear regression) on the test data. What data did we train  our model with, why did we choose those data.
+
+
+
+```
+
+future:
+
+broom
+
+modelr
+
+t tests
+
+note to self
+
+r for data science chapter 22-24, 26-30
