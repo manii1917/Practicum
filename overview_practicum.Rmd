@@ -662,6 +662,20 @@ find, and be prepared to answer the following:
 
 ### setup
 
+We're going to take a commonly used dataset that is baked into R called
+`iris` and transform the data into something we may see out in the wild
+related to mental health. Please note we will make use of the `broom`,
+`ggfortify`, and `modelr` packages, so go ahead and install those.
+
+These are real data based measurements of parts of flowers, and we're
+going to convert them to completely made up scores that a mental health
+professional might see when they use these tools to aid in their
+assessment of a patient's anxiety or depression. These scales are real
+and pieces of them can be found online. I found some interpretations of
+the numbers, and put them in the comments, but generally the higher the
+number the more likely this person is presenting with anxiety or
+depression.
+
 ```{r}
 library(broom)
 library(ggfortify)
@@ -704,16 +718,37 @@ fake_depression_scale_scores <-
   rowid_to_column()
 
 
-
+glimpse(fake_depression_scale_scores)
 
 ```
 
+Quick note: BDI and PHQ9 are for depression, and GAD7 is for anxiety.
+
+Now take a look at the data and then and then pretend that the column
+DEPRESSION_STATUS is 100% correct independent of the scores in the
+tibble. Let's say that there was a separate clinical evaluation done, or
+that we, as observers have omnipotent knowledge of these people's
+depression status.
+
+What sort of questions might we have? How well do the depression related
+scales predict depression status? How well does the BDI and PHQ9 jive
+with each other? Can you we use the anxiety scale to predict either of
+the depression scales? (keep in mind these data are made up, and may
+reflect the opposite of reality).
+
+### Taking a look
+
+We'll start out by looking at our data to get a feel. In R for data
+science they suggest taking a small chunk of data that is solely for
+this purpose and partitioning for looking. We don't have that many rows,
+and again, this is for learning so we won't be doing that step here.
+
 ```{r}
 
+#brute force
 
 ggplot(fake_depression_scale_scores, aes(PHQ9, GAD7)) +
   geom_point()
-
 
 ggplot(fake_depression_scale_scores, aes(PHQ9, BDI)) +
   geom_point()
@@ -721,7 +756,68 @@ ggplot(fake_depression_scale_scores, aes(PHQ9, BDI)) +
 ggplot(fake_depression_scale_scores, aes(GAD7, BDI)) +
   geom_point()
 
+# a little  more elegant
 
+fake_depression_scale_scores %>% 
+  select(-c(DEPRESSION_STATUS, rowid)) %>% 
+  pivot_longer(
+    cols = c(PHQ9, GAD7, BDI),
+    names_to = "scale_type",
+    values_to = "score"
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(scale_type, score)) +
+  theme_bw()
+
+
+  
+
+```
+
+#### Quick note  on pivot_longer()
+
+Pivoting is a common practice in data wrangling and depending on what
+someone is doing it might be advantageous to have tables be longer or
+wider. Generally, when working with raw data, especially in the
+tidyverse it is easier to work with data that is longer, and other
+times, like building a map in R for example, you might not have a choice
+but to widen the data.
+
+Now what do we mean by long or wide? These terms are a little fuzzy and
+you might land somewhere in the middle, or you might have incredibly
+long (millions fo rows) tables that are wide.
+
+Look at our fake data tibble, notice how before there was 3 numeric
+variables, `PHQ9` `BDI`, and `GAD7`. That would be a wide table. We
+pivoted it to make it long by storing those column names as values in a
+single variable called `scale_type` and then just plugging in their
+associated score values into a `score` variable. `pivot_wider()` can be
+used to reverse what we did. I'll encourage you to take a look at these
+resources to get a better understanding of this process. Analysts and
+epidemiologists, regardless of the statistical programming language used
+will almost certainly come across this in real life and will need to
+know how to perform these actions.
+
+function doco:
+[pivot_longer()](https://tidyr.tidyverse.org/reference/pivot_longer.html),
+[pivot_wider()](https://tidyr.tidyverse.org/reference/pivot_wider.html),
+[tidyr cheat sheet- this has good example with
+pictures](https://github.com/rstudio/cheatsheets/blob/main/tidyr.pdf)
+
+### Model building   
+
+Be careful! That boxplot, in this case is just for taking a quick peek
+at everything all at once. You might want to draw conclusions, but
+remember the scales' scores mean different things, and they might not
+even have the same range of possible values. You can quickly spot
+outliers this way, which you can handle in different ways, or point out
+data quality errors that snuck by if you were cleaning these data for
+analyses.
+
+Let's start simply, a simple linear regression, just taking two numerics
+variables, and ignore the other numeric + categorical.
+
+```{r}
 #how well is PHQ9 depression explained by GAD7
 
 phq9_gad7_model <- 
@@ -739,7 +835,6 @@ ggplot(fake_depression_scale_scores, aes(GAD7, PHQ9)) +
   geom_jitter() +
   geom_smooth(method = "lm", se = FALSE) +
   theme_bw()
-
 ```
 
 ```{r}
