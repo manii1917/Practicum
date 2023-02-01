@@ -815,19 +815,49 @@ data quality errors that snuck by if you were cleaning these data for
 analyses.
 
 Let's start simply, a simple linear regression, just taking two numerics
-variables, and ignore the other numeric + categorical.
+variables, and ignore the other numeric + categorical. Ultimately (and
+you'll see this in the R for data science chapters) we are trying to
+create a best fit line that minimizes prediction errors that uses that
+old familiar formula from algebra y = mx +b (and other similiar looking
+families of equations). y here is our numeric dependent variable (the
+one we are trying to predict), m is the slope, which is one of the
+coefficients from our model, whilst x is the independent, or explanatory
+variable and then we have our constant b which is the y-intercept.
 
 ```{r}
 #how well is PHQ9 depression explained by GAD7
 
+#using function lm() you write out your  'formula' as:
+#  value you are trying to  predict/dependant variable ~ independant variable/ explanatory variable
+
+#you'll notice that this function doesn't adhere to the typical 'tidy' way  of doing things with  the data being in the first argument. 
+
 phq9_gad7_model <- 
   lm(PHQ9 ~ GAD7, data = fake_depression_scale_scores)
 
-summary(phq9_gad7_model)
 
+#this will print out a test summary version of  our model 
+#and it's coefficients, but it's hard to work with as data
+summary(phq9_gad7_model)
+#              intercept GAD7 estimate/slope   std. error aka sigma
+#PHQ9 score = 16.78467 + 0.81304*GAD7  +/- 0.04 
+
+#generally if  GAD7 score was 8  (pretty anxious) then  
+#PHQ9 would be:
+
+16.78467 + (0.81304 * 8)
+## ~23, which is pretty  depressed according to our scale
+
+
+#this function lets your look at the model coefficients as data in a tibble so you can  work with them later.
+broom::tidy(phq9_gad7_model)
+
+#this function  grabs some other  helpful summary statistics
 broom::glance(phq9_gad7_model)
 
-#PHQ9 score = 16.694 + 0.83*GAD7
+#this function binds the fitted  values with the actual raw data
+broom::augment(phq9_gad7_model)
+
 
 #put what you are are predicting on the y axis, the explanatory variable on the x axis
 
@@ -837,12 +867,31 @@ ggplot(fake_depression_scale_scores, aes(GAD7, PHQ9)) +
   theme_bw()
 ```
 
+I just found this awesome write up on many of the model values found in
+the summary that I wish I had when I started writing this. It's light on
+code, and spends more time looking at the different pieces and showing
+you what they might look like graphed. I highly recommend. [Regression
+outputs in
+R](https://towardsdatascience.com/understanding-linear-regression-output-in-r-7a9cbda948b3).
+I think you can only view this page a select number of times, so maybe
+just leave it open or print to pdf.
+
 ```{r}
+#'random number' generation in many programs is only pseudo-random
+##they start from some predetermined point or number, often called a seed and then go from there
+
+#this can be useful because if you  use the same seed as  me even when  we are randomly sampling rows, our datasets will be the same, if you run the code in order as it is written
+
 set.seed(1312023)
 
 train <- 
   fake_depression_scale_scores %>% 
-  slice_sample(prop = .33, replace = FALSE)
+  slice_sample(
+    prop = .33, #setting aside 33% of the data for training
+    replace = FALSE #no replacement
+  )
+
+#for replacement think about drawing different colored marbles from a bag randomly over and over. Do you put the marble back before your next draw, so it has a chance to be chosen again? If so, that is replacement.  If the marbles you draw are set aside, then there is no replacement.  We want train and test completely separate, so replacement is set to false.
   
 test <- 
   fake_depression_scale_scores %>% 
