@@ -839,8 +839,8 @@ phq9_gad7_model <-
 #this will print out a test summary version of  our model 
 #and it's coefficients, but it's hard to work with as data
 summary(phq9_gad7_model)
-#              intercept GAD7 estimate/slope   std. error aka sigma
-#PHQ9 score = 16.78467 + 0.81304*GAD7  +/- 0.04 
+#           intercept   GAD7 estimate/slope   
+#PHQ9 score = 16.78467 + 0.81304*GAD7 
 
 #generally if  GAD7 score was 8  (pretty anxious) then  
 #PHQ9 would be:
