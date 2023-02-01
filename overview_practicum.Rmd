@@ -774,7 +774,7 @@ fake_depression_scale_scores %>%
 
 ```
 
-#### Quick note  on pivot_longer()
+#### Quick note on pivot_longer()
 
 Pivoting is a common practice in data wrangling and depending on what
 someone is doing it might be advantageous to have tables be longer or
@@ -804,7 +804,7 @@ function doco:
 [tidyr cheat sheet- this has good example with
 pictures](https://github.com/rstudio/cheatsheets/blob/main/tidyr.pdf)
 
-### Model building   
+### Model building
 
 Be careful! That boxplot, in this case is just for taking a quick peek
 at everything all at once. You might want to draw conclusions, but
@@ -845,7 +845,8 @@ summary(phq9_gad7_model)
 #generally if  GAD7 score was 8  (pretty anxious) then  
 #PHQ9 would be:
 
-16.78467 + (0.81304 * 8)
+manual_prediction <- 16.78467 + (0.81304 * 8)
+manual_prediction
 ## ~23, which is pretty  depressed according to our scale
 
 
@@ -857,6 +858,23 @@ broom::glance(phq9_gad7_model)
 
 #this function binds the fitted  values with the actual raw data
 broom::augment(phq9_gad7_model)
+
+#how did our prediction stack up?  let's see if there is a GAD7 value of 8 and if we had around 23 for PHQ9
+
+
+phq9_gad7_model %>% 
+  augment() %>% 
+  filter(GAD7 == 8) %>% 
+  select(PHQ9, GAD7, .fitted) %>% 
+  unique() %>% 
+  mutate(
+    how_close = abs(.fitted - manual_prediction)
+  )
+
+#we see 22, 24, and 25. So what do you think, as 23 a good guess or no? notice the .fitted value is the prediction
+#look at how_close to see how far away our back of the napkin manual prediction was, super close!
+
+
 
 
 #put what you are are predicting on the y axis, the explanatory variable on the x axis
