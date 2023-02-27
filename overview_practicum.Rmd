@@ -972,6 +972,9 @@ test_logistics_data <-
     cyl,
     wt
   ) %>% 
+  filter(
+    cyl %in% c(4,6)
+  ) %>% 
   mutate(
     cyl = as.factor(cyl)
   )
