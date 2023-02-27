@@ -994,8 +994,43 @@ log_model <- glm(
 
 log_model
 
+
+fake_explanatory_data <-
+  tibble(
+    wt = seq(
+      from = 1,
+      to = 6,
+      by = 0.001
+    )
+  )
+
+
+predictions <- 
+ predict(
+   log_model,
+   newdata = fake_explanatory_data,
+   type = "response"
+ )
+  
+  
+  
+  
+take_alook <- 
+  fake_explanatory_data %>% 
+  mutate(
+    cyl_predictions = predictions
+  )
+  
+  
+  
+  
+
+take_alook %>% 
+  ggplot(aes(x = wt, y = cyl_predictions)) +
+  geom_line()
+
 ```
 
-\
+playing around with the following website:\
 [Basic stats explained (in R) - Logistic regression
 (mgimond.github.io)](https://mgimond.github.io/Stats-in-R/Logistic.html)
