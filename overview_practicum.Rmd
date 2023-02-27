@@ -64,11 +64,16 @@ understanding for the following:
 ## Project Development
 
 1.  Primer on working in Azure Devops - primarily git focused
+
 2.  Overview of the data on [Infectious Diseases Statistics
     page](https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
+
     1.  Pros and Cons - how do we think we can make it better
+
 3.  Pulling the data from the star model
+
 4.  Comparing the data from the star model to previous public releases
+
 5.  Creating a script that can be the basis of our automation that will
     move data from the star model to the ODP for public consumption
 
@@ -326,16 +331,21 @@ stakeholders.
 
 -   Review of ODP datasets for Covid-19 data (hint, there is a set of
     new tables and a set of old tables)
+
 -   Review the ODP datasets for influenza data and any other publicly
     available data
+
     -   If needed, engage with ODP data stewards from the Office of
         Policy and Management they can also help us comb through all the
         data to find useful datasets
+
 -   Construct a .rmd with possibly meaningful analyses
+
     -   we will code what we can, but if there is anything you've
         learned biostats that you think might be appropriate, I can work
         with you to employ those methods and fill in the 'r knowledge
         gaps'
+
 -   TBD
 
 ## What is Meaningful?
@@ -948,3 +958,44 @@ t tests
 note to self
 
 r for data science chapter 22-24, 26-30
+
+```{r practce_logistics}
+
+
+test_logistics_data <- 
+  mtcars %>% 
+  as_tibble() %>% 
+  select(
+    mpg,
+    disp,
+    hp,
+    cyl,
+    wt
+  ) %>% 
+  mutate(
+    cyl = as.factor(cyl)
+  )
+
+
+
+
+test_logistics_data %>% 
+  ggplot()+
+  geom_boxplot(aes(cyl, mpg))
+
+
+#lets predict cyl based on other characteristics
+
+log_model <- glm(
+  cyl ~ wt, 
+  data = test_logistics_data,
+  family = "binomial"
+)
+
+log_model
+
+```
+
+\
+[Basic stats explained (in R) - Logistic regression
+(mgimond.github.io)](https://mgimond.github.io/Stats-in-R/Logistic.html)
