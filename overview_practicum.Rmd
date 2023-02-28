@@ -64,11 +64,16 @@ understanding for the following:
 ## Project Development
 
 1.  Primer on working in Azure Devops - primarily git focused
+
 2.  Overview of the data on [Infectious Diseases Statistics
     page](https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
+
     1.  Pros and Cons - how do we think we can make it better
+
 3.  Pulling the data from the star model
+
 4.  Comparing the data from the star model to previous public releases
+
 5.  Creating a script that can be the basis of our automation that will
     move data from the star model to the ODP for public consumption
 
@@ -326,16 +331,21 @@ stakeholders.
 
 -   Review of ODP datasets for Covid-19 data (hint, there is a set of
     new tables and a set of old tables)
+
 -   Review the ODP datasets for influenza data and any other publicly
     available data
+
     -   If needed, engage with ODP data stewards from the Office of
         Policy and Management they can also help us comb through all the
         data to find useful datasets
+
 -   Construct a .rmd with possibly meaningful analyses
+
     -   we will code what we can, but if there is anything you've
         learned biostats that you think might be appropriate, I can work
         with you to employ those methods and fill in the 'r knowledge
         gaps'
+
 -   TBD
 
 ## What is Meaningful?
@@ -379,7 +389,7 @@ population or is a spike in disease. If you haven't already, you will
 perform a direct and/or indirect adjustment in either your stats or epi
 class.
 
-## Signal Detection -  A Covid-19 example
+## Signal Detection - A Covid-19 example
 
 Let's discuss something we've alluded to many times in our previous
 conversations but haven't quite covered, and that is signal detection.
@@ -657,3 +667,373 @@ find, and be prepared to answer the following:
 
 -   Is there another baseline we could've used for Flu or Covid, that
     may or may not be based on the datasets available?
+
+## Quick and dirty Simple Linear Regression
+
+### setup
+
+We're going to take a commonly used dataset that is baked into R called
+`iris` and transform the data into something we may see out in the wild
+related to mental health. Please note we will make use of the `broom`,
+`ggfortify`, and `modelr` packages, so go ahead and install those.
+
+These are real data based measurements of parts of flowers, and we're
+going to convert them to completely made up scores that a mental health
+professional might see when they use these tools to aid in their
+assessment of a patient's anxiety or depression. These scales are real
+and pieces of them can be found online. I found some interpretations of
+the numbers, and put them in the comments, but generally the higher the
+number the more likely this person is presenting with anxiety or
+depression.
+
+```{r}
+library(broom)
+library(ggfortify)
+library(modelr)
+
+#PHQ-9* Questionnaire for Depression Scoring and Interpretation 
+##Minimal depression 0-4
+##Mild depression 5-9
+##Moderate depression 10-14
+##Moderately severe depression 15-19
+##Severe depression 20-27
+
+
+#GAD-7 (General Anxiety Disorder-7)
+##0-7 no anxiety disorder
+##8+ probable anxiety disorder
+
+
+#Beck's Depression Inventory
+##1-10 These ups and downs are considered normal 
+##11-16 Mild mood disturbance 
+##17-20 Borderline clinical depression 
+##21-30 Moderate depression 
+##31-40 Severe depression 
+##over 40 Extreme depression
+
+fake_depression_scale_scores <- 
+  iris %>% 
+  summarize(
+    PHQ9 = round(log(Sepal.Length^12)), 
+    GAD7 = round(Petal.Length + 1.5),
+    BDI = round(Petal.Width^4.1),
+    DEPRESSION_STATUS = case_when(
+      Species == "setosa" ~ "Not Depressed",
+      Species == "versicolor" 
+       ~ "Other Specified Depressive Disorder",
+      Species == "virginica" ~ "Major Depressive Disorder"
+    )
+  ) %>% 
+  rowid_to_column()
+
+
+glimpse(fake_depression_scale_scores)
+
+```
+
+Quick note: BDI and PHQ9 are for depression, and GAD7 is for anxiety.
+
+Now take a look at the data and then and then pretend that the column
+DEPRESSION_STATUS is 100% correct independent of the scores in the
+tibble. Let's say that there was a separate clinical evaluation done, or
+that we, as observers have omnipotent knowledge of these people's
+depression status.
+
+What sort of questions might we have? How well do the depression related
+scales predict depression status? How well does the BDI and PHQ9 jive
+with each other? Can you we use the anxiety scale to predict either of
+the depression scales? (keep in mind these data are made up, and may
+reflect the opposite of reality).
+
+### Taking a look
+
+We'll start out by looking at our data to get a feel. In R for data
+science they suggest taking a small chunk of data that is solely for
+this purpose and partitioning for looking. We don't have that many rows,
+and again, this is for learning so we won't be doing that step here.
+
+```{r}
+
+#brute force
+
+ggplot(fake_depression_scale_scores, aes(PHQ9, GAD7)) +
+  geom_point()
+
+ggplot(fake_depression_scale_scores, aes(PHQ9, BDI)) +
+  geom_point()
+
+ggplot(fake_depression_scale_scores, aes(GAD7, BDI)) +
+  geom_point()
+
+# a little  more elegant
+
+fake_depression_scale_scores %>% 
+  select(-c(DEPRESSION_STATUS, rowid)) %>% 
+  pivot_longer(
+    cols = c(PHQ9, GAD7, BDI),
+    names_to = "scale_type",
+    values_to = "score"
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(scale_type, score)) +
+  theme_bw()
+
+
+  
+
+```
+
+#### Quick note on pivot_longer()
+
+Pivoting is a common practice in data wrangling and depending on what
+someone is doing it might be advantageous to have tables be longer or
+wider. Generally, when working with raw data, especially in the
+tidyverse it is easier to work with data that is longer, and other
+times, like building a map in R for example, you might not have a choice
+but to widen the data.
+
+Now what do we mean by long or wide? These terms are a little fuzzy and
+you might land somewhere in the middle, or you might have incredibly
+long (millions fo rows) tables that are wide.
+
+Look at our fake data tibble, notice how before there was 3 numeric
+variables, `PHQ9` `BDI`, and `GAD7`. That would be a wide table. We
+pivoted it to make it long by storing those column names as values in a
+single variable called `scale_type` and then just plugging in their
+associated score values into a `score` variable. `pivot_wider()` can be
+used to reverse what we did. I'll encourage you to take a look at these
+resources to get a better understanding of this process. Analysts and
+epidemiologists, regardless of the statistical programming language used
+will almost certainly come across this in real life and will need to
+know how to perform these actions.
+
+function doco:
+[pivot_longer()](https://tidyr.tidyverse.org/reference/pivot_longer.html),
+[pivot_wider()](https://tidyr.tidyverse.org/reference/pivot_wider.html),
+[tidyr cheat sheet- this has good example with
+pictures](https://github.com/rstudio/cheatsheets/blob/main/tidyr.pdf)
+
+### Model building
+
+Be careful! That boxplot, in this case is just for taking a quick peek
+at everything all at once. You might want to draw conclusions, but
+remember the scales' scores mean different things, and they might not
+even have the same range of possible values. You can quickly spot
+outliers this way, which you can handle in different ways, or point out
+data quality errors that snuck by if you were cleaning these data for
+analyses.
+
+Let's start simply, a simple linear regression, just taking two numerics
+variables, and ignore the other numeric + categorical. Ultimately (and
+you'll see this in the R for data science chapters) we are trying to
+create a best fit line that minimizes prediction errors that uses that
+old familiar formula from algebra y = mx +b (and other similiar looking
+families of equations). y here is our numeric dependent variable (the
+one we are trying to predict), m is the slope, which is one of the
+coefficients from our model, whilst x is the independent, or explanatory
+variable and then we have our constant b which is the y-intercept.
+
+```{r}
+#how well is PHQ9 depression explained by GAD7
+
+#using function lm() you write out your  'formula' as:
+#  value you are trying to  predict/dependant variable ~ independant variable/ explanatory variable
+
+#you'll notice that this function doesn't adhere to the typical 'tidy' way  of doing things with  the data being in the first argument. 
+
+phq9_gad7_model <- 
+  lm(PHQ9 ~ GAD7, data = fake_depression_scale_scores)
+
+
+#this will print out a test summary version of  our model 
+#and it's coefficients, but it's hard to work with as data
+summary(phq9_gad7_model)
+#           intercept   GAD7 estimate/slope   
+#PHQ9 score = 16.78467 + 0.81304*GAD7 
+
+#generally if  GAD7 score was 8  (pretty anxious) then  
+#PHQ9 would be:
+
+manual_prediction <- 16.78467 + (0.81304 * 8)
+manual_prediction
+## ~23, which is pretty  depressed according to our scale
+
+
+#this function lets your look at the model coefficients as data in a tibble so you can  work with them later.
+broom::tidy(phq9_gad7_model)
+
+#this function  grabs some other  helpful summary statistics
+broom::glance(phq9_gad7_model)
+
+#this function binds the fitted  values with the actual raw data
+broom::augment(phq9_gad7_model)
+
+#how did our prediction stack up?  let's see if there is a GAD7 value of 8 and if we had around 23 for PHQ9
+
+
+phq9_gad7_model %>% 
+  augment() %>% 
+  filter(GAD7 == 8) %>% 
+  select(PHQ9, GAD7, .fitted) %>% 
+  unique() %>% 
+  mutate(
+    how_close = abs(.fitted - manual_prediction)
+  )
+
+#we see 22, 24, and 25. So what do you think, as 23 a good guess or no? notice the .fitted value is the prediction
+#look at how_close to see how far away our back of the napkin manual prediction was, super close!
+
+
+
+
+#put what you are are predicting on the y axis, the explanatory variable on the x axis
+
+ggplot(fake_depression_scale_scores, aes(GAD7, PHQ9)) +
+  geom_jitter() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
+```
+
+I just found this awesome write up on many of the model values found in
+the summary that I wish I had when I started writing this. It's light on
+code, and spends more time looking at the different pieces and showing
+you what they might look like graphed. I highly recommend. [Regression
+outputs in
+R](https://towardsdatascience.com/understanding-linear-regression-output-in-r-7a9cbda948b3).
+I think you can only view this page a select number of times, so maybe
+just leave it open or print to pdf.
+
+```{r}
+#'random number' generation in many programs is only pseudo-random
+##they start from some predetermined point or number, often called a seed and then go from there
+
+#this can be useful because if you  use the same seed as  me even when  we are randomly sampling rows, our datasets will be the same, if you run the code in order as it is written
+
+set.seed(1312023)
+
+train <- 
+  fake_depression_scale_scores %>% 
+  slice_sample(
+    prop = .33, #setting aside 33% of the data for training
+    replace = FALSE #no replacement
+  )
+
+#for replacement think about drawing different colored marbles from a bag randomly over and over. Do you put the marble back before your next draw, so it has a chance to be chosen again? If so, that is replacement.  If the marbles you draw are set aside, then there is no replacement.  We want train and test completely separate, so replacement is set to false.
+  
+test <- 
+  fake_depression_scale_scores %>% 
+  filter(!rowid %in% train$rowid)
+
+
+bdi_model <- lm(PHQ9 ~ BDI , data = train)
+
+predictions <- predict(bdi_model, test)
+
+with_pred <- 
+  bind_cols(test, predictions)
+
+
+  ggplot(data = with_pred ) +
+  geom_jitter(aes(BDI, PHQ9)) +
+  geom_smooth(aes(BDI, PHQ9), method = "lm", se = FALSE) +
+  geom_point(aes(BDI, predictions), size  = 2, color = "orange",
+             fill = "orange" , shape = 21) +
+  theme_bw()
+  
+  #think about why our prediction are different that the blue best fit line (using linear regression) on the test data. What data did we train  our model with, why did we choose those data.
+
+
+
+```
+
+future:
+
+broom
+
+modelr
+
+t tests
+
+note to self
+
+r for data science chapter 22-24, 26-30
+
+```{r practce_logistics}
+
+
+test_logistics_data <- 
+  mtcars %>% 
+  as_tibble() %>% 
+  select(
+    mpg,
+    disp,
+    hp,
+    cyl,
+    wt
+  ) %>% 
+  filter(
+    cyl %in% c(4,6)
+  ) %>% 
+  mutate(
+    cyl = as.factor(cyl)
+  )
+
+
+
+
+test_logistics_data %>% 
+  ggplot()+
+  geom_boxplot(aes(cyl, mpg))
+
+
+#lets predict cyl based on other characteristics
+
+log_model <- glm(
+  cyl ~ wt, 
+  data = test_logistics_data,
+  family = "binomial"
+)
+
+log_model
+
+
+fake_explanatory_data <-
+  tibble(
+    wt = seq(
+      from = 1,
+      to = 6,
+      by = 0.001
+    )
+  )
+
+
+predictions <- 
+ predict(
+   log_model,
+   newdata = fake_explanatory_data,
+   type = "response"
+ )
+  
+  
+  
+  
+take_alook <- 
+  fake_explanatory_data %>% 
+  mutate(
+    cyl_predictions = predictions
+  )
+  
+  
+  
+  
+
+take_alook %>% 
+  ggplot(aes(x = wt, y = cyl_predictions)) +
+  geom_line()
+
+```
+
+playing around with the following website:\
+[Basic stats explained (in R) - Logistic regression
+(mgimond.github.io)](https://mgimond.github.io/Stats-in-R/Logistic.html)
