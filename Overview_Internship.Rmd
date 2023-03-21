@@ -1,0 +1,1013 @@
+---
+title: "Internship Work"
+author: "Manisha Singh ;Senetcky, Alexander"
+date: "`'2023-03-08'`"
+output: 
+     html_document:
+    toc: true # table of content true
+    toc_float: true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    theme: united  # many options for theme
+    highlight: tango  # specifies the syntax highlighting style
+    code_folding: show
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Objectives:
+Throughout this practicum course, our goal is to demonstrate proficiency or an 
+appropriate level of understanding to the student in the following areas:
+
+
+## Knowledge based skills:
+-   A working knowledge of the statistical programming language, R, and
+    its family of packages known as the
+    [tidyverse](https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/)
+
+-   A working knowledge of the [R Studio Integrated Development
+    Environment (IDE)](https://www.rstudio.com/products/rstudio/)
+
+-   A working knowledge of using R to query Star-model based data housed
+    within SQL databases
+
+-   A working knowledge of Connecticut's [Open Data
+    Portal](https://data.ct.gov/)(ODP)
+
+-   A basic understanding of Devops and AGILE workflows within the Azure
+    DevOps tool
+
+-   A basic understanding of Git, a distributed source control
+
+
+## Project based Outcomes:
+Our goal is to create an ODP data product that will make it easier for the public to access a tabular version of the data currently available on DPH's websiteDPH's [Infectious Diseases Statistics page]
+(https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
+
+
+# Timeline
+## Getting set up
+1.  Getting Access to our developer environment and star model
+2.  R + R Studio Bootcamp
+3.  Git crashcourse
+4.  R usescases at the DPH
+
+## Project Development
+1.  Primer on working in Azure Devops - primarily git focused
+
+2.  Overview of the data on [Infectious Diseases Statistics
+    page]
+  (https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
+
+    1.  Pros and Cons - how do we think we can make it better
+
+3.  Pulling the data from the star model
+
+4.  Comparing the data from the star model to previous public releases
+
+5.  Creating a script that can be the basis of our automation that will
+    move data from the star model to the ODP for public consumption
+
+
+# Thoughts- 
+```{Open data portal:pros and cons}
+Some potential pros and cons of the Infectious Diseases Statistics page:
+
+Pros:
+1. Provides access to a variety of statistics related to infectious diseases in Connecticut.
+2. Offers data visualizations in the form of interactive charts, graphs, and maps.
+3. Allows users to filter data by disease, year, age, and other factors.
+4. Provides information on data definitions and methodology.
+
+Cons:
+1. The website layout can be overwhelming and difficult to navigate for some users.
+2. Some data visualizations may be difficult to interpret or understand without additional context.
+3. Some data sets may be outdated or incomplete.
+4. There may be limitations in terms of the amount or types of data that can be displayed.
+
+To improve the page, some potential solutions could include:
+1. Simplifying the website layout and making it more user-friendly.
+2. Providing more context and explanation for data visualizations.
+3. Updating data sets on a more frequent basis to ensure accuracy and completeness.
+4. Adding additional data sets and allowing for more customization of filters to meet different user needs.
+```
+
+
+# Suggested Reading 1:
+## R Introduction:
+
+[R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections, 1, 2,
+3.1-3.1.1
+
+# R and the ODP
+## Getting Data from the ODP
+I find the best way to learn R, or any language, is to start with a problem, break it into
+pieces, and then start tackling it from there. One of the earliest hurdles an epidemiologist
+might have to overcome involves reading data into the environment. Usually, there are a few 
+options and ways to go about this in each language. Both SAS and R Studio have a point-and-click 
+GUI to read data and options to ingest data programmatically. R is generally easier to do this
+with because it is less strict on data type and length, but a good programmer will enforce 
+these things anyway. Today, we'll be doing something different since one of the goals is to 
+learn the Open Data Portal. We will play with data stored on the open web and pull it down 
+using an Application Programming Interface or API.
+
+## Installing RSocrata Package
+Below is a code chunk showing the installation of the RSocrata Package.
+For your first time installing this, you will want to erase the \# and
+run that line to install the package.
+
+Below is the library statement that invokes using that
+package's functions for your workflow. We will heavily use the
+function *read. socrata()*. You can see it in action below, where I pull
+in publicly released CT Monkey Pox Age group data. The ODP let's users
+do an API callout to pull data into memory
+[dataset](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_AgeGroup/bg8t-bfyp).
+#codes :
+```{r installing_RSocrata, }
+#install.packages("RSocrata")
+library(RSocrata)
+#install.packages("tidyverse")
+library(tidyverse)
+monkey_pox_agegroups <- 
+  RSocrata::read.socrata(
+    url = "https://data.ct.gov/resource/bg8t-bfyp.json"
+  ) %>% 
+  as_tibble()
+print(monkey_pox_agegroups)
+```
+
+
+## Suggested Reading 2:
+### R Visualizations:
+
+[R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections
+3.2-3.4, skim 3.5, 3.6, skim 3.7-3.10
+
+## Plotting ODP Monkey Pox Data
+Armed with the reading above, and the *read.socrata()* example, please
+attempt to do the following:
+
+-   Create a new .R script
+-   Download the MPOX state
+    [data](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_State/qhtt-czu2)
+    using the URL "<https://data.ct.gov/resource/qhtt-czu2.json>" and assign it to a tibble
+-   Using the ReportPeriodStart variable for the x-axis and a count on
+    the y axis, please create a bar chart using ggplot2 package (which
+    is part of the tidyverse package) and *geom_bar()*
+    
+#codes :    
+```{r eval=FALSE, include=FALSE}
+monkey_pox_state_data <- 
+  RSocrata::read.socrata(
+    url = "https://data.ct.gov/resource/qhtt-czu2.json"
+  ) %>% 
+  as_tibble()
+monkey_pox_state_data %>% 
+  ggplot() +
+  geom_bar(aes(reportperiodstart))
+```
+
+
+#Thoughts or Assigned work:
+```{Assigned work}
+#Read MonkeyPox Data into a tibble
+monkey_pox_dt <- 
+  RSocrata::read.socrata(
+    url = "https://data.ct.gov/resource/qhtt-czu2.json"
+  ) %>% 
+  as_tibble()
+
+#Look at the Data to verify it looks okay
+print(monkey_pox_dt)
+
+#Basic plot on count of cases for each report period start
+ggplot(data = monkey_pox_dt) + 
+  geom_bar(mapping = aes(x = reportperiodstart))
+
+#Modifying the existing plot to display label and change in colors
+ggplot(data = monkey_pox_dt) + 
+  geom_bar(mapping = aes(x = reportperiodstart,fill = ..count..)) +
+  geom_text(aes(x = reportperiodstart, label = ..count..), stat = "count", vjust = 1.5, colour = "white")
+```
+
+
+
+## Suggested Reading 3:
+# DPLYR (The bread and butter of the tidyverse):
+
+## Suggested Reading
+-   [Quick Overview](https://dplyr.tidyverse.org/) Just read the
+    overview and check out the Cheat Sheet
+
+-   [Introduction to
+    dplyr](https://dplyr.tidyverse.org/articles/dplyr.html) This whole
+    thing is a good overview. Focusing on *filter*, *select*, *rename*,
+    *mutate* and *summarise* is a good use of time though.
+
+## Approaching a table with SAS and dplyr
+SAS and R approach similar issues from different points of view, and I think both are important
+to know. Languages come and go, and tools can be swapped for others, but keeping in mind how 
+one language might tackle a problem and then being able to apply it to novel roadblocks or new 
+languages is always helpful. Long story short, in public health, you will always be strapped
+for time and/or resources, so thinking critically and being able to break a problem down 
+into miniature steps like you would in any language is the most important lesson of all.
+
+In general, a SAS workflow might center around a few workhouse functions with many 
+different arguments. In contrast, R, in the tidyverse, will focus on smaller functions with 
+fewer options, but by doing one thing, you can chain them together in any order.
+
+SAS PROC FREQ is a good example; out of the box, it is a handy little
+function for looking at counts across groups in data. Using our
+monkey_pox_agegroups table as an example, you might type something like
+the following in SAS:
+PROC FREQ data = monkey_pox_agegroups;\
+Tables agegroup;\
+Run;
+
+This would give you a count, a groupwise percent of the whole, a cumulative count, and a 
+cumulative percent. Not bad for a few lines. It might be a bit more verbose if we try to 
+recreate that in R using the basic dplyr verbs. However, you might not need all the extras, 
+or as you become more advanced and you settle into a more standard approach in your day to day, 
+you might try your hand at creating your own functions and/or starting piping functions into 
+other functions using some other packages. It's in that sweet spot where you start getting
+a return on your investment. But for now, let's use recreating proc freq as a
+showcase for showing off dplyr verbs.
+
+#codes to get percent of the whole,cumulative count, and cumulative percent:
+```{r, dplyr showcase}
+#let's take a look at the table structure again
+glimpse(monkey_pox_agegroups)
+#base R might use the str() function instead
+str(monkey_pox_agegroups) #think structure
+#I want a table with counts of age groups, with percents and cumulative counts/percents
+desired_output <- 
+  monkey_pox_agegroups %>% 
+#I want my calculations done per group, in this case agegroup
+  group_by(agegroup) %>% 
+ #this is a counting function, works greeeat with groupby
+  tally(name = "Frequency") %>% 
+#let's create a new variable
+#ungrouping because I don't want this donee pere group now
+  mutate(
+    Percent = Frequency/sum(Frequency) * 100, #the sum function works like the SAS one,
+    #and just, like the SAS a NULL value will NULL out the entire output, unless 
+    #otherwise specificed to ignore NULLs or NAs
+    
+#lets round this, this could be neested up there, but I like readability
+    Percent = round(
+      Percent,
+      digits = 2
+    ),
+    cumulative_frequency = cumsum(Frequency),  #cumulative sum function
+    
+#nesting here as an example
+    cumulative_percent = round(
+      cumulative_frequency / 
+        sum(cumulative_frequency) * 100,
+      digits = 2
+    )
+  )
+desired_output
+```
+
+There is more or less your proc freq output. Something like this could
+be tidied up and stored into a function you can use over and over again,
+or another package could be used with similar functions etc.... that
+will be out of the scope of this project, however.
+For now let's pretty that table up to showcase some of the other dplyr
+verbs like select, filter, rename and arrange.
+
+#codes for select, filter, rename and arrange:
+```{r, prettyitup}
+
+pretty_output <- 
+  desired_output %>% 
+# performance wise, it's often best to filter at the top, lets drop rows
+  #frequency is less than 20
+  filter(Frequency >= 20) %>%  #any row where that statement is TRUE, will be kept
+#lets just select the first few columns
+  select(
+    agegroup,
+    Frequency,
+    Percent
+  ) %>% 
+ #lets rename agegroup 
+  rename(
+    #format is desired name first, then original var name
+    # use backticks ` for non standard names
+    `Age Group` = agegroup
+  ) %>% 
+ #lets arrange by highest frequeny in the descending ordere
+  arrange(
+    desc(Frequency)
+  )
+  
+pretty_output
+```
+
+
+## Question:
+Based on the reading above, can you use the *summarise* function, and
+the dataframe: monkey_pox_state_data to tell me which is the least
+common 'reportperiodend' date?
+
+# Thoughts or assigned work:
+```{r, prettyitup}
+
+monkey_pox_state_data <- 
+  RSocrata::read.socrata(
+    url = "https://data.ct.gov/resource/qhtt-czu2.json"
+  ) %>% 
+  as_tibble()
+print(monkey_pox_state_data) 
+
+ monkey_pox_state_data %>% count(reportperiodend, sort = TRUE)
+ monkey_pox_state_data %>% count(reportperiodstart, sort = TRUE)
+ 
+ monkey_pox_state_data %>% 
+   group_by(disease) %>%
+   dplyr::summarize(Mean = mean(reportperiodend, na.rm=TRUE))
+ 
+ pretty_output
+```
+
+
+
+## Suggested Reading 4:
+# Influenza:
+
+## Overview
+Influenza data will go live on the tables we have worked with in just a few days. 
+Respiratory Syncytial Virus(RSV) will likely follow suit, but that is more up in the air. 
+Covid has shifted the seasonal patterns of other respiratory diseases. Many in the public
+health community are worried about Covid, Flu, and RSV coming together to form a "tri-demic."
+
+Using what we've learned about R, visualizations, the ODP, and GitHub, we're going to begin 
+to put together a Rmarkdown document (like this one here) that will contain exploratory 
+analyses surrounding ODP data for covid and flu that could be potentially useful to public 
+health decision makers. We will also attempt to incorporate signal detection methods to
+see if there is any activity that might be out of the ordinary and eventually, we will take 
+our findings and distill them down into key takeaways that you might try to share 
+with decision-makers and stakeholders.
+
+### Steps
+-   Review of ODP datasets for Covid-19 data (hint, there is a set of
+    new tables and a set of old tables)
+
+-   Review the ODP datasets for influenza data and any other publicly
+    available data
+
+    -   If needed, engage with ODP data stewards from the Office of
+        Policy and Management they can also help us comb through all the
+        data to find useful datasets
+
+-   Construct a .rmd with possibly meaningful analyses
+
+    -   we will code what we can, but if there is anything you've
+        learned biostats that you think might be appropriate, I can work
+        with you to employ those methods and fill in the 'r knowledge
+        gaps'
+
+-   TBD
+
+## What is Meaningful?
+In public health and specifically with infectious disease you'll often
+be asking yourself what is a meaningful burden of disease where you can
+and should take action. This can be a difficult to assess. Pretend for a
+moment that you are an epidemiologist working for the Hartford Health
+Department and your local health director tells you that there are 500
+cases of disease X in the city and asks you if this is something we
+should be monitoring.
+
+-   What might you be prepared to say?
+
+-   What kinds of questions are you asking yourself?
+
+-   What kinds of questions do you have for the health director?
+
+#Conclusion:
+```{meaningful}
+
+ I would be prepared to say the following:-
+
+1. 500 cases of disease X in the city may indicate a potential outbreak and it would be 
+appropriate to monitor the situation further to determine if action needs to be taken.
+2. To determine if this is a significant burden of disease, we need to consider the incidence rate of the disease, the severity of the illness, and the potential for transmission to others.
+
+Questions I would be asking myself include:-
+  
+1. What is the incidence rate of disease X in the population?
+2. Is disease X a reportable disease in the area, and if so, are the 500 cases representative of all cases in the area?
+3. What are the symptoms and severity of disease X?
+4. Is disease X contagious or does it have a high potential for transmission?
+5. What is the age range and demographic of those affected by disease X?
+6. Are there any other factors, such as recent travel or exposure to an infected person, that may be contributing to the increase in cases?
+  
+Questions I may have for the health director include:-
+  
+1. What actions have already been taken in response to the cases of disease X?
+2. Are there any specific populations or areas of the city where cases are more concentrated?
+3. Is there any information about the source or cause of the disease?
+4. What resources are available to help monitor and respond to the situation if necessary?
+  
+ meaningful_output
+```
+
+
+
+## Suggested Reading 5:
+## Signal Detection - A Covid-19 example
+
+Let's discuss about signal detection.
+This is just one take at it and is more helpful when you are counting
+something with high numbers, like syndromic surveillance data. Many of
+the signal detection maths are borrowed from engineering methods for
+quality assurance processes. A few of which were assessed for outbreak
+detection one such
+[paper](https://wwwnc.cdc.gov/eid/article/26/9/19-1315_article).
+Methods such as those, and others that are a little more manual/ad hoc have been
+used to act quickly in public health emergencies as seen
+[here](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7367072/)
+
+Using an exponentially weighted moving average (EMA or EWMA) is one such
+method we have used in the past. Without getting into the details just
+yet, these methods will often boil down to basically comparing a
+baseline count of what was expected for a given day, based on past
+information to what actually happened, and then flag days that go beyond
+a certain threshold that the user sets. In engineering, a factory might
+be producing many thousands of products so they have the luxury of
+pulling random samples and working with their means. In public health we
+often have count data and often times much smaller numbers so we have to
+adjust the way we do business.
+
+Using a statistical method to detect events of interest allows public
+health workers to looks at huge swathes of data of all kinds of
+different diseases and flag anything based on numbers alone. It's
+repeatable and efficient and is good at casting a wide net. However, it
+can lead to false positives based on what kind of data you are using,
+and what kind of thresholds you are setting. Depending on the use case,
+this can be acceptable if it saves time and money by preventing staff
+from combing through rows and rows of raw data and it can possibly set
+public health to quickly pivot and act in certain situations.
+
+
+# Thought Exercise
+#Think about what kinds of data and/or diseases might be good fits for using algorithmic signal detection
+
+Some types of data and diseases that might be good fits for algorithmic signal detection are :
+ -Infectious disease outbreaks 
+ -Cancer detection
+ -Environmental pollution:
+ -Mental health disorders
+ 
+# What do they have in common?
+- Things which are common are that they are complex, involve large amounts of data, and may 
+have patterns or anomalies that can be difficult for humans to identify without the aid of 
+advanced analytical tools.
+
+# How are they different?
+- They differ in terms of the specific data sources that are being analyzed, the types of patterns being detected, and the underlying causes of the diseases or conditions being studied.
+
+# Are there any data streams you came across in your mental health data project from the other course that might be good to use with algorithmic signal detection?
+- One data stream that might be a better fit for algorithmic signal detection in the context of mental health is social media data.
+
+# Why are they, or aren't they a good fit?
+It generate large amounts of data, including text, images, and videos, that can be analyzed using natural language processing algorithms, computer vision algorithms, or a combination of both.
+
+social media data also has limitations and ethical considerations that must be taken into account when using it for algorithmic signal detection.
+
+# Assume for a moment you have a perfect data set, what kind of event might a 'mental health' signal correspond to in real life?
+Here are a few examples:
+1. An increase in the frequency of language related to depression or anxiety in social media posts, which might indicate a higher prevalence of these mental health disorders in a given population.
+
+2. A sudden decrease in social media activity which indicates social withdrawal or isolation and potentially be indicative of a mental health concern.
+
+3. An increase in the frequency of mental health-related searches on a search engine, which might suggest that individuals are seeking information or resources related to mental health issues.
+
+# Is this signal something public health can respond to in the short term or long term?
+Mental health signal can be responded to in the short or long term will depend on a variety of factors such as:
+1. Nature of the signal, 
+2. Resources available, 
+3. Policies and regulations governing public health interventions
+
+#Pretend you have the perfect data set and you find something right now you can act on, think about how you want to mobilize your partners and stakeholders
+I would want to mobilize my partners and stakeholders quickly and effectively to ensure a coordinated and efficient response, steps would be -
+1. Identify and engage key partners and stakeholders
+2. Share data and insights
+3. Develop a shared action plan
+4. Implement interventions
+5. Evaluate outcomes
+
+
+#How would you like to take advantage of this timely information to communicate to the public?
+It's important to be clear, concise, and empathetic:
+1. Provide actionable information
+2. Empower people to take action
+3. Address stigma
+4. Acknowledge challenges and barriers
+
+
+#How do approach leadership and explain to them how serious this situation is and what you can do to help?
+It's important to be clear and concise in  communication, here are some steps-
+1. Gather all relevant information
+2. Frame the situation
+3. Offer solutions
+4. Show your commitment
+5. Follow up
+
+
+
+
+## Suggested Reading 6:
+## Nitty Gritty
+
+#codes:
+```{r extra_libraries}
+#install these
+library(pracma) #for maths
+library(roll) #for rolling mathematical functions
+library(leaflet) #for mapping
+library(lubridate) #package for making working with dates super easy
+```
+
+```{r lets_roll}
+SMADAYS <- 7 # number of days for the simple moving average
+EMADAYS <- 7# number of days for Exponentially weighted moving average
+SDROLL <- 7  # number of days for the rolling Standard Deviation of errors
+covid_19_epicurve <- 
+  read.socrata("https://data.ct.gov/resource/g9vi-2ahj.json") %>% 
+  as_tibble()
+```
+
+#### Creating a baseline and thresholds
+Baselines can be complex, or simple. Sometimes it's best to pick
+something you can easily explain, like a simple moving average (SMA) and
+then go from there when you are explaining things to someone else.
+
+After we make our baseline, which is just an educated guess, we want to
+see how far away our *actual* values are from the guess. The magnitude
+of the errors will help us determine how far away from baseline we are
+and if we care.
+
+#codes:
+```{r baseline}
+state_counts <- 
+  covid_19_epicurve %>% 
+  select(date, total_cases) %>% 
+#creating SMA Prediction, it's lagged so the prediction is for the next day
+  mutate(
+    total_cases = as.numeric(total_cases),
+    date = lubridate::as_date(date),
+    baseline_SMA = lag(
+      round(
+        x = pracma::movavg(
+          x = total_cases, 
+          n = SMADAYS, 
+          type = "s" #for simple moving average
+        ),
+        digits = 3
+      )
+    ),
+#residuals are prediction errors, we're going to take
+#the standard deviation of these on a rolling basis
+#setting to 0 initially
+    residual_std = 0
+  ) %>% 
+  filter(!is.na(baseline_SMA)) %>%  #dropping NA SMA, can't make one for first day of period, but the first week of data is just 0's for everyone anyway
+  mutate(residuals = total_cases - baseline_SMA) #prediction errors or residuals
+#next part uses some ugly base R matrix-y stuff that the function expects
+state_counts$residual_std <- 
+  roll::roll_sd(
+    matrix(
+      state_counts$residuals
+    ),
+    SDROLL
+  )
+# we can then smooth out prediction errors using an exponentially weighted moving average, EMA or EWMA to heavily weight the more recent errors (when compared to those at the beginning of the week)
+#and then we can set thresholds to see if there are spikes we care about
+state_counts <- 
+  state_counts %>% 
+    filter(!is.na(residual_std)) %>% #dropping NA residual_std as we have that buffer and the mean just looks weird here
+    mutate(
+      #EMA of the SDs of the residuals
+      EMA_sd = lag(
+        round(
+         x = movavg(
+            x = residual_std, 
+            n = EMADAYS, 
+              type = "e" #for rolling exponential weighting
+          ), 
+          digits = 3
+        )
+      )
+    ) %>% 
+  #setting thresholds
+  #2,3,4 have always served me well
+  #any count for a given day that is 
+  #the prediction + 2 thru 4 times the smooth  weight errors 
+  #is an outlier we might want to look at
+    mutate(
+      threshold4 = baseline_SMA + (4 * EMA_sd),
+      threshold3 = baseline_SMA + (3 * EMA_sd),
+      threshold2 = baseline_SMA + (2 * EMA_sd)
+    ) %>%
+    filter(!is.na(EMA_sd))
+```
+
+
+#### Plotting our data, thresholds and hotspots
+```{r looking_athotspots}
+#this is a bit verbose, and could be cleaned up with a case_when() or two, but lets keep it simple
+#I want to highlight days that shot past the expected number by our 
+#3 tresholds and I want lines to show the threshold for the days
+state_counts_forplot <- 
+  state_counts %>% 
+  mutate(
+    t2highlight = if_else(
+      total_cases > threshold2, 
+      total_cases, 
+      NA_real_
+    ),
+    t3highlight = if_else(
+      total_cases >= threshold3, 
+      total_cases, 
+      NA_real_
+    ),
+    t4highlight = if_else(
+      total_cases >= threshold4, 
+      total_cases, 
+      NA_real_
+    ),
+    t2highlight = if_else(
+      !is.na(t3highlight),
+      NA_real_,
+      t2highlight
+    ),
+    t3highlight = if_else(
+      !is.na(t4highlight),
+      NA_real_,
+      t3highlight
+    )
+  )
+#lets take a look
+ggplot(state_counts_forplot, aes(date, total_cases)) +
+  geom_line() +
+  geom_line(aes(date, threshold4), col = "orange") +
+  geom_line(aes(date, threshold3), col = "darkturquoise") +
+  geom_line(aes(date, threshold2), col = "blue") +
+  geom_point(aes(date, t4highlight), col = "orange", size = 1.0) +
+  geom_point(aes(date, t3highlight), col = "darkturquoise", size = 1.5) +
+  geom_point(aes(date, t2highlight), col = "orange", size = 2) +
+  theme_dark() + 
+  labs(
+    x = "Date",
+    y = "Number of Cases",
+    title = "Covid-19 Confirmed and Probable Cases Hotspots"
+  )
+  
+```
+
+#### What do you notice?
+Look at the threshold lines, what do you notice? What happens to them
+during a peak, during quiet times? What does this mean for false alarms
+during peaks or "off-season" times?
+
+Look at the dots, where do they tend to congregate in relation to the
+peaks, are all the does helpful? Too early or too late? Think about if
+these hypothetical alarms were raised, would it buy us enough time to do
+anything?
+
+## Exercise: Back to Influenza
+
+Since we've started this our mpox ODP table now has become a more
+general table with other diseases in it. One such disease is our friend,
+Influenza. Using a related table found here: [Reportable Cases on the
+ODP](https://data.ct.gov/Health-and-Human-Services/Connecticut-Reportable-Disease-Case-List/qhtt-czu2)
+please pull the data down, filter to Influenza cases and practice what
+we did above on this table.
+
+You'll notice that these data are not by day, please use report period
+start as your "date". Since these are already weeks we'll want to be
+careful how we interpret these data. How might we want to change
+EMADAYS, SDSROLL, and SMADAYS? Play around with making changes these
+values and see what happens.
+
+Add your code to a chunk below this paragraph. I want to see your data
+wrangling, and a plot like the one above. Please let me know what you
+find, and be prepared to answer the following:
+
+-   Is this method appropriate for these data, why or why not?
+
+-   And what, if any, adjustments did you have to make?
+
+-   Is there another baseline we could've used for Flu or Covid, that
+    may or may not be based on the datasets available?
+
+## Quick and dirty Simple Linear Regression
+
+### setup
+
+We're going to take a commonly used dataset that is baked into R called
+`iris` and transform the data into something we may see out in the wild
+related to mental health. Please note we will make use of the `broom`,
+`ggfortify`, and `modelr` packages, so go ahead and install those.
+
+These are real data based measurements of parts of flowers, and we're
+going to convert them to completely made up scores that a mental health
+professional might see when they use these tools to aid in their
+assessment of a patient's anxiety or depression. These scales are real
+and pieces of them can be found online. I found some interpretations of
+the numbers, and put them in the comments, but generally the higher the
+number the more likely this person is presenting with anxiety or
+depression.
+
+```{r}
+library(broom)
+library(ggfortify)
+library(modelr)
+#PHQ-9* Questionnaire for Depression Scoring and Interpretation 
+##Minimal depression 0-4
+##Mild depression 5-9
+##Moderate depression 10-14
+##Moderately severe depression 15-19
+##Severe depression 20-27
+#GAD-7 (General Anxiety Disorder-7)
+##0-7 no anxiety disorder
+##8+ probable anxiety disorder
+#Beck's Depression Inventory
+##1-10 These ups and downs are considered normal 
+##11-16 Mild mood disturbance 
+##17-20 Borderline clinical depression 
+##21-30 Moderate depression 
+##31-40 Severe depression 
+##over 40 Extreme depression
+fake_depression_scale_scores <- 
+  iris %>% 
+  summarize(
+    PHQ9 = round(log(Sepal.Length^12)), 
+    GAD7 = round(Petal.Length + 1.5),
+    BDI = round(Petal.Width^4.1),
+    DEPRESSION_STATUS = case_when(
+      Species == "setosa" ~ "Not Depressed",
+      Species == "versicolor" 
+       ~ "Other Specified Depressive Disorder",
+      Species == "virginica" ~ "Major Depressive Disorder"
+    )
+  ) %>% 
+  rowid_to_column()
+glimpse(fake_depression_scale_scores)
+```
+
+Quick note: BDI and PHQ9 are for depression, and GAD7 is for anxiety.
+
+Now take a look at the data and then and then pretend that the column
+DEPRESSION_STATUS is 100% correct independent of the scores in the
+tibble. Let's say that there was a separate clinical evaluation done, or
+that we, as observers have omnipotent knowledge of these people's
+depression status.
+
+What sort of questions might we have? How well do the depression related
+scales predict depression status? How well does the BDI and PHQ9 jive
+with each other? Can you we use the anxiety scale to predict either of
+the depression scales? (keep in mind these data are made up, and may
+reflect the opposite of reality).
+
+### Taking a look
+
+We'll start out by looking at our data to get a feel. In R for data
+science they suggest taking a small chunk of data that is solely for
+this purpose and partitioning for looking. We don't have that many rows,
+and again, this is for learning so we won't be doing that step here.
+
+```{r}
+#brute force
+ggplot(fake_depression_scale_scores, aes(PHQ9, GAD7)) +
+  geom_point()
+ggplot(fake_depression_scale_scores, aes(PHQ9, BDI)) +
+  geom_point()
+ggplot(fake_depression_scale_scores, aes(GAD7, BDI)) +
+  geom_point()
+# a little  more elegant
+fake_depression_scale_scores %>% 
+  select(-c(DEPRESSION_STATUS, rowid)) %>% 
+  pivot_longer(
+    cols = c(PHQ9, GAD7, BDI),
+    names_to = "scale_type",
+    values_to = "score"
+  ) %>% 
+  ggplot() +
+  geom_boxplot(aes(scale_type, score)) +
+  theme_bw()
+  
+```
+
+#### Quick note on pivot_longer()
+
+Pivoting is a common practice in data wrangling and depending on what
+someone is doing it might be advantageous to have tables be longer or
+wider. Generally, when working with raw data, especially in the
+tidyverse it is easier to work with data that is longer, and other
+times, like building a map in R for example, you might not have a choice
+but to widen the data.
+
+Now what do we mean by long or wide? These terms are a little fuzzy and
+you might land somewhere in the middle, or you might have incredibly
+long (millions fo rows) tables that are wide.
+
+Look at our fake data tibble, notice how before there was 3 numeric
+variables, `PHQ9` `BDI`, and `GAD7`. That would be a wide table. We
+pivoted it to make it long by storing those column names as values in a
+single variable called `scale_type` and then just plugging in their
+associated score values into a `score` variable. `pivot_wider()` can be
+used to reverse what we did. I'll encourage you to take a look at these
+resources to get a better understanding of this process. Analysts and
+epidemiologists, regardless of the statistical programming language used
+will almost certainly come across this in real life and will need to
+know how to perform these actions.
+
+function doco:
+[pivot_longer()](https://tidyr.tidyverse.org/reference/pivot_longer.html),
+[pivot_wider()](https://tidyr.tidyverse.org/reference/pivot_wider.html),
+[tidyr cheat sheet- this has good example with
+pictures](https://github.com/rstudio/cheatsheets/blob/main/tidyr.pdf)
+
+### Model building
+
+Be careful! That boxplot, in this case is just for taking a quick peek
+at everything all at once. You might want to draw conclusions, but
+remember the scales' scores mean different things, and they might not
+even have the same range of possible values. You can quickly spot
+outliers this way, which you can handle in different ways, or point out
+data quality errors that snuck by if you were cleaning these data for
+analyses.
+
+Let's start simply, a simple linear regression, just taking two numerics
+variables, and ignore the other numeric + categorical. Ultimately (and
+you'll see this in the R for data science chapters) we are trying to
+create a best fit line that minimizes prediction errors that uses that
+old familiar formula from algebra y = mx +b (and other similiar looking
+families of equations). y here is our numeric dependent variable (the
+one we are trying to predict), m is the slope, which is one of the
+coefficients from our model, whilst x is the independent, or explanatory
+variable and then we have our constant b which is the y-intercept.
+
+```{r}
+#how well is PHQ9 depression explained by GAD7
+#using function lm() you write out your  'formula' as:
+#  value you are trying to  predict/dependant variable ~ independant variable/ explanatory variable
+#you'll notice that this function doesn't adhere to the typical 'tidy' way  of doing things with  the data being in the first argument. 
+phq9_gad7_model <- 
+  lm(PHQ9 ~ GAD7, data = fake_depression_scale_scores)
+#this will print out a test summary version of  our model 
+#and it's coefficients, but it's hard to work with as data
+summary(phq9_gad7_model)
+#           intercept   GAD7 estimate/slope   
+#PHQ9 score = 16.78467 + 0.81304*GAD7 
+#generally if  GAD7 score was 8  (pretty anxious) then  
+#PHQ9 would be:
+manual_prediction <- 16.78467 + (0.81304 * 8)
+manual_prediction
+## ~23, which is pretty  depressed according to our scale
+#this function lets your look at the model coefficients as data in a tibble so you can  work with them later.
+broom::tidy(phq9_gad7_model)
+#this function  grabs some other  helpful summary statistics
+broom::glance(phq9_gad7_model)
+#this function binds the fitted  values with the actual raw data
+broom::augment(phq9_gad7_model)
+#how did our prediction stack up?  let's see if there is a GAD7 value of 8 and if we had around 23 for PHQ9
+phq9_gad7_model %>% 
+  augment() %>% 
+  filter(GAD7 == 8) %>% 
+  select(PHQ9, GAD7, .fitted) %>% 
+  unique() %>% 
+  mutate(
+    how_close = abs(.fitted - manual_prediction)
+  )
+#we see 22, 24, and 25. So what do you think, as 23 a good guess or no? notice the .fitted value is the prediction
+#look at how_close to see how far away our back of the napkin manual prediction was, super close!
+#put what you are are predicting on the y axis, the explanatory variable on the x axis
+ggplot(fake_depression_scale_scores, aes(GAD7, PHQ9)) +
+  geom_jitter() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw()
+```
+
+I just found this awesome write up on many of the model values found in
+the summary that I wish I had when I started writing this. It's light on
+code, and spends more time looking at the different pieces and showing
+you what they might look like graphed. I highly recommend. [Regression
+outputs in
+R](https://towardsdatascience.com/understanding-linear-regression-output-in-r-7a9cbda948b3).
+I think you can only view this page a select number of times, so maybe
+just leave it open or print to pdf.
+
+```{r}
+#'random number' generation in many programs is only pseudo-random
+##they start from some predetermined point or number, often called a seed and then go from there
+#this can be useful because if you  use the same seed as  me even when  we are randomly sampling rows, our datasets will be the same, if you run the code in order as it is written
+set.seed(1312023)
+train <- 
+  fake_depression_scale_scores %>% 
+  slice_sample(
+    prop = .33, #setting aside 33% of the data for training
+    replace = FALSE #no replacement
+  )
+#for replacement think about drawing different colored marbles from a bag randomly over and over. Do you put the marble back before your next draw, so it has a chance to be chosen again? If so, that is replacement.  If the marbles you draw are set aside, then there is no replacement.  We want train and test completely separate, so replacement is set to false.
+  
+test <- 
+  fake_depression_scale_scores %>% 
+  filter(!rowid %in% train$rowid)
+bdi_model <- lm(PHQ9 ~ BDI , data = train)
+predictions <- predict(bdi_model, test)
+with_pred <- 
+  bind_cols(test, predictions)
+  ggplot(data = with_pred ) +
+  geom_jitter(aes(BDI, PHQ9)) +
+  geom_smooth(aes(BDI, PHQ9), method = "lm", se = FALSE) +
+  geom_point(aes(BDI, predictions), size  = 2, color = "orange",
+             fill = "orange" , shape = 21) +
+  theme_bw()
+  
+  #think about why our prediction are different that the blue best fit line (using linear regression) on the test data. What data did we train  our model with, why did we choose those data.
+```
+
+future:
+
+broom
+
+modelr
+
+t tests
+
+note to self
+
+r for data science chapter 22-24, 26-30
+
+```{r practce_logistics}
+test_logistics_data <- 
+  mtcars %>% 
+  as_tibble() %>% 
+  select(
+    mpg,
+    disp,
+    hp,
+    cyl,
+    wt
+  ) %>% 
+  filter(
+    cyl %in% c(4,6)
+  ) %>% 
+  mutate(
+    cyl = as.factor(cyl)
+  )
+test_logistics_data %>% 
+  ggplot()+
+  geom_boxplot(aes(cyl, mpg))
+#lets predict cyl based on other characteristics
+log_model <- glm(
+  cyl ~ wt, 
+  data = test_logistics_data,
+  family = "binomial"
+)
+log_model
+fake_explanatory_data <-
+  tibble(
+    wt = seq(
+      from = 1,
+      to = 6,
+      by = 0.001
+    )
+  )
+predictions <- 
+ predict(
+   log_model,
+   newdata = fake_explanatory_data,
+   type = "response"
+ )
+  
+  
+  
+  
+take_alook <- 
+  fake_explanatory_data %>% 
+  mutate(
+    cyl_predictions = predictions
+  )
+  
+  
+  
+  
+take_alook %>% 
+  ggplot(aes(x = wt, y = cyl_predictions)) +
+  geom_line()
+```
+
+playing around with the following website:\
+[Basic stats explained (in R) - Logistic regression
+(mgimond.github.io)](https://mgimond.github.io/Stats-in-R/Logistic.html)
+Footer
