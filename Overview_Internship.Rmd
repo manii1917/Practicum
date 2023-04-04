@@ -3,7 +3,7 @@ title: "Internship Work"
 author: "Manisha Singh ;Senetcky, Alexander"
 date: "`'2023-03-08'`"
 output: 
-     html_document:
+    html_document:
     toc: true # table of content true
     toc_float: true
     toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
@@ -39,33 +39,31 @@ appropriate level of understanding to the student in the following areas:
 -   A working knowledge of Connecticut's [Open Data
     Portal](https://data.ct.gov/)(ODP)
 
--   A basic understanding of Devops and AGILE workflows within the Azure
-    DevOps tool
-
 -   A basic understanding of Git, a distributed source control
 
 
 ## Project based Outcomes:
-Our goal is to create an ODP data product that will make it easier for the public to access a tabular version of the data currently available on DPH's websiteDPH's [Infectious Diseases Statistics page]
-(https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
+Our goal is to create an ODP data product that will make it easier for the public to access a tabular version of the data currently available on DPH's website. It will also enable them to perform simple data manipulation tasks to create a summarized or graphical view using R.
 
 
 # Timeline
 ## Getting set up
 1.  Getting Access to our developer environment and star model
-2.  R + R Studio Bootcamp
-3.  Git crashcourse
-4.  R usescases at the DPH
+
+2.  R + R-Studio Bootcamp
+
+3.  Git crash course
+
+4.  R use cases at the DPH
 
 ## Project Development
 1.  Primer on working in Azure Devops - primarily git focused
 
-2.  Overview of the data on [Infectious Diseases Statistics
-    page]
-  (https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
+2.  Overview of the data on [CT- DPH Infectious Diseases Statistics page](https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
 
-    1.  Pros and Cons - how do we think we can make it better
-
+    -  Pros and Cons - how do we think we can make it better.
+    
+    
 3.  Pulling the data from the star model
 
 4.  Comparing the data from the star model to previous public releases
@@ -317,7 +315,7 @@ the dataframe: monkey_pox_state_data to tell me which is the least
 common 'reportperiodend' date?
 
 # Thoughts or assigned work:
-```{r, prettyitup}
+```{r, prettyitupmp}
 
 monkey_pox_state_data <- 
   RSocrata::read.socrata(
@@ -950,7 +948,7 @@ r for data science chapter 22-24, 26-30
 
 ```{r practce_logistics}
 test_logistics_data <- 
-  mtcars %>% 
+  mtcars %>%
   as_tibble() %>% 
   select(
     mpg,
