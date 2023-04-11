@@ -73,28 +73,38 @@ Our goal is to create an ODP data product that will make it easier for the publi
 
 
 # Thoughts- 
-```{Open data portal:pros and cons}
-Some potential pros and cons of the Infectious Diseases Statistics page:
-
-Pros:
-1. Provides access to a variety of statistics related to infectious diseases in Connecticut.
-2. Offers data visualizations in the form of interactive charts, graphs, and maps.
-3. Allows users to filter data by disease, year, age, and other factors.
-4. Provides information on data definitions and methodology.
-
-Cons:
-1. The website layout can be overwhelming and difficult to navigate for some users.
-2. Some data visualizations may be difficult to interpret or understand without additional context.
-3. Some data sets may be outdated or incomplete.
-4. There may be limitations in terms of the amount or types of data that can be displayed.
-
-To improve the page, some potential solutions could include:
-1. Simplifying the website layout and making it more user-friendly.
-2. Providing more context and explanation for data visualizations.
-3. Updating data sets on a more frequent basis to ensure accuracy and completeness.
-4. Adding additional data sets and allowing for more customization of filters to meet different user needs.
+Some potential pros and cons of the Infectious Diseases Statistics page are listed below along with few potential improvement scope:
+```{r, eval=FALSE}
 ```
-
+<details>
+  <summary>Pros </summary>
+    ```{r, results='asis', echo=FALSE, eval=TRUE}
+cat("\n1.  Provides access to a variety of statistics related to infectious diseases in Connecticut. \n") 
+cat("\n2.  Offers data visualizations in the form of interactive charts, graphs, and maps. \n") 
+cat("\n3.  Allows users to filter data by disease, year, age, and other factors. \n") 
+cat("\n4.  Provides information on data definitions and methodology. \n\n\n") 
+    ```
+</details>
+#
+<details>
+  <summary>Cons \n\n</summary>
+    ```{r, results='asis', echo=FALSE, eval=TRUE}
+cat("\n1. The website layout can be overwhelming and difficult to navigate for some users. \n") 
+cat("\n2. Some data visualizations may be difficult to interpret or understand without additional context. \n") 
+cat("\n3. Some data sets may be outdated or incomplete. \n") 
+cat("\n4. There may be limitations in terms of the amount or types of data that can be displayed. \n\n\n") 
+    ```
+</details>
+#
+<details>
+  <summary>Potential Improvements \n\n</summary>
+    ```{r, results='asis',echo=FALSE, eval=TRUE}
+cat("\n1. Simplifying the website layout and making it more user-friendly. \n") 
+cat("\n2. Providing more context and explanation for data visualizations. \n") 
+cat("\n3. Updating data sets on a more frequent basis to ensure accuracy and completeness. \n") 
+cat("\n4. Adding additional data sets and allowing for more customization of filters to meet different user needs. \n\n\n") 
+    ```
+</details>
 
 # Suggested Reading 1:
 ## R Introduction:
