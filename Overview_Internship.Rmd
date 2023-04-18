@@ -1,23 +1,36 @@
 ---
 title: "Internship Work"
-author: "Manisha Singh ;Senetcky, Alexander"
+author: "Manisha Singh; Senetcky, Alexander"
 date: "`'2023-03-08'`"
-output: 
-    html_document:
+output:
+  html_document:
     toc: true # table of content true
     toc_float: true
     toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
     number_sections: true  ## if you want number sections at each table header
-    theme: united  # many options for theme
+    theme: united  # many options for theme, this one is my favorite.
     highlight: tango  # specifies the syntax highlighting style
     code_folding: show
-editor_options: 
-  markdown: 
-    wrap: 72
+  editor_options: 
+     markdown: 
+     wrap: 72
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+#install.packages("RSocrata")
+library(RSocrata)
+#install.packages("tidyverse")
+library(tidyverse)
+
+library(pracma) #for maths
+library(roll) #for rolling mathematical functions
+library(leaflet) #for mapping
+library(lubridate) #package for making working with dates super easy
+library(broom)
+library(ggfortify)
+library(modelr)
+
 ```
 
 # Objectives:
@@ -46,8 +59,8 @@ appropriate level of understanding to the student in the following areas:
 Our goal is to create an ODP data product that will make it easier for the public to access a tabular version of the data currently available on DPH's website. It will also enable them to perform simple data manipulation tasks to create a summarized or graphical view using R.
 
 
-# Timeline
-## Getting set up
+# Timeline:
+## Getting set up:
 1.  Getting Access to our developer environment and star model
 
 2.  R + R-Studio Bootcamp
@@ -56,7 +69,7 @@ Our goal is to create an ODP data product that will make it easier for the publi
 
 4.  R use cases at the DPH
 
-## Project Development
+## Project Development:
 1.  Primer on working in Azure Devops - primarily git focused
 
 2.  Overview of the data on [CT- DPH Infectious Diseases Statistics page](https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
@@ -72,12 +85,13 @@ Our goal is to create an ODP data product that will make it easier for the publi
     move data from the star model to the ODP for public consumption
 
 
-# Thoughts- 
+# Infectious Disease Statistics page: 
 Some potential pros and cons of the Infectious Diseases Statistics page are listed below along with few potential improvement scope:
 ```{r, eval=FALSE}
 ```
+## Pros:
 <details>
-  <summary>Pros </summary>
+  <summary>Advantages of using the page are: \n\n</summary>
     ```{r, results='asis', echo=FALSE, eval=TRUE}
 cat("\n1.  Provides access to a variety of statistics related to infectious diseases in Connecticut. \n") 
 cat("\n2.  Offers data visualizations in the form of interactive charts, graphs, and maps. \n") 
@@ -85,9 +99,9 @@ cat("\n3.  Allows users to filter data by disease, year, age, and other factors.
 cat("\n4.  Provides information on data definitions and methodology. \n\n\n") 
     ```
 </details>
-#
+## Cons:
 <details>
-  <summary>Cons \n\n</summary>
+  <summary> Disadvantages of using the page are: \n\n</summary>
     ```{r, results='asis', echo=FALSE, eval=TRUE}
 cat("\n1. The website layout can be overwhelming and difficult to navigate for some users. \n") 
 cat("\n2. Some data visualizations may be difficult to interpret or understand without additional context. \n") 
@@ -95,9 +109,9 @@ cat("\n3. Some data sets may be outdated or incomplete. \n")
 cat("\n4. There may be limitations in terms of the amount or types of data that can be displayed. \n\n\n") 
     ```
 </details>
-#
+## Potential Improvements:
 <details>
-  <summary>Potential Improvements \n\n</summary>
+  <summary> Potential Improvements that can be made to the page are: \n\n</summary>
     ```{r, results='asis',echo=FALSE, eval=TRUE}
 cat("\n1. Simplifying the website layout and making it more user-friendly. \n") 
 cat("\n2. Providing more context and explanation for data visualizations. \n") 
@@ -112,8 +126,8 @@ cat("\n4. Adding additional data sets and allowing for more customization of fil
 [R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections, 1, 2,
 3.1-3.1.1
 
-# R and the ODP
-## Getting Data from the ODP
+## R and the ODP
+### Getting Data from the ODP
 I find the best way to learn R, or any language, is to start with a problem, break it into
 pieces, and then start tackling it from there. One of the earliest hurdles an epidemiologist
 might have to overcome involves reading data into the environment. Usually, there are a few 
@@ -124,7 +138,7 @@ these things anyway. Today, we'll be doing something different since one of the 
 learn the Open Data Portal. We will play with data stored on the open web and pull it down 
 using an Application Programming Interface or API.
 
-## Installing RSocrata Package
+### Installing RSocrata Package
 Below is a code chunk showing the installation of the RSocrata Package.
 For your first time installing this, you will want to erase the \# and
 run that line to install the package.
@@ -135,12 +149,9 @@ function *read. socrata()*. You can see it in action below, where I pull
 in publicly released CT Monkey Pox Age group data. The ODP let's users
 do an API callout to pull data into memory
 [dataset](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_AgeGroup/bg8t-bfyp).
-#codes :
-```{r installing_RSocrata, }
-#install.packages("RSocrata")
-library(RSocrata)
-#install.packages("tidyverse")
-library(tidyverse)
+### codes :
+```{r Read_Monkeypox_data, }
+
 monkey_pox_agegroups <- 
   RSocrata::read.socrata(
     url = "https://data.ct.gov/resource/bg8t-bfyp.json"
@@ -150,8 +161,8 @@ print(monkey_pox_agegroups)
 ```
 
 
-## Suggested Reading 2:
-### R Visualizations:
+# Suggested Reading 2:
+## R Visualizations
 
 [R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections
 3.2-3.4, skim 3.5, 3.6, skim 3.7-3.10
@@ -168,7 +179,7 @@ attempt to do the following:
     the y axis, please create a bar chart using ggplot2 package (which
     is part of the tidyverse package) and *geom_bar()*
     
-#codes :    
+## codes :    
 ```{r eval=FALSE, include=FALSE}
 monkey_pox_state_data <- 
   RSocrata::read.socrata(
@@ -181,7 +192,7 @@ monkey_pox_state_data %>%
 ```
 
 
-#Thoughts or Assigned work:
+## Thoughts or Assigned work:
 ```{Assigned work}
 #Read MonkeyPox Data into a tibble
 monkey_pox_dt <- 
@@ -205,10 +216,8 @@ ggplot(data = monkey_pox_dt) +
 
 
 
-## Suggested Reading 3:
-# DPLYR (The bread and butter of the tidyverse):
-
-## Suggested Reading
+# Suggested Reading 3:
+## DPLYR (The bread and butter of the tidyverse): Suggested Reading
 -   [Quick Overview](https://dplyr.tidyverse.org/) Just read the
     overview and check out the Cheat Sheet
 
@@ -246,7 +255,7 @@ other functions using some other packages. It's in that sweet spot where you sta
 a return on your investment. But for now, let's use recreating proc freq as a
 showcase for showing off dplyr verbs.
 
-#codes to get percent of the whole,cumulative count, and cumulative percent:
+## codes to get percent of the whole,cumulative count, and cumulative percent:
 ```{r, dplyr showcase}
 #let's take a look at the table structure again
 glimpse(monkey_pox_agegroups)
@@ -290,7 +299,7 @@ will be out of the scope of this project, however.
 For now let's pretty that table up to showcase some of the other dplyr
 verbs like select, filter, rename and arrange.
 
-#codes for select, filter, rename and arrange:
+## codes for select, filter, rename and arrange:
 ```{r, prettyitup}
 
 pretty_output <- 
@@ -324,7 +333,7 @@ Based on the reading above, can you use the *summarise* function, and
 the dataframe: monkey_pox_state_data to tell me which is the least
 common 'reportperiodend' date?
 
-# Thoughts or assigned work:
+## Thoughts or assigned work:
 ```{r, prettyitupmp}
 
 monkey_pox_state_data <- 
@@ -346,10 +355,8 @@ print(monkey_pox_state_data)
 
 
 
-## Suggested Reading 4:
-# Influenza:
-
-## Overview
+# Suggested Reading 4:
+## Influenza: Overview
 Influenza data will go live on the tables we have worked with in just a few days. 
 Respiratory Syncytial Virus(RSV) will likely follow suit, but that is more up in the air. 
 Covid has shifted the seasonal patterns of other respiratory diseases. Many in the public
@@ -398,7 +405,7 @@ should be monitoring.
 
 -   What kinds of questions do you have for the health director?
 
-#Conclusion:
+## Conclusion:
 ```{meaningful}
 
  I would be prepared to say the following:-
@@ -428,7 +435,7 @@ Questions I may have for the health director include:-
 
 
 
-## Suggested Reading 5:
+# Suggested Reading 5:
 ## Signal Detection - A Covid-19 example
 
 Let's discuss about signal detection.
@@ -464,8 +471,8 @@ from combing through rows and rows of raw data and it can possibly set
 public health to quickly pivot and act in certain situations.
 
 
-# Thought Exercise
-#Think about what kinds of data and/or diseases might be good fits for using algorithmic signal detection
+## Thought Exercise
+### Think about what kinds of data and/or diseases might be good fits for using algorithmic signal detection
 
 Some types of data and diseases that might be good fits for algorithmic signal detection are :
  -Infectious disease outbreaks 
@@ -473,23 +480,23 @@ Some types of data and diseases that might be good fits for algorithmic signal d
  -Environmental pollution:
  -Mental health disorders
  
-# What do they have in common?
+### What do they have in common?
 - Things which are common are that they are complex, involve large amounts of data, and may 
 have patterns or anomalies that can be difficult for humans to identify without the aid of 
 advanced analytical tools.
 
-# How are they different?
+### How are they different?
 - They differ in terms of the specific data sources that are being analyzed, the types of patterns being detected, and the underlying causes of the diseases or conditions being studied.
 
-# Are there any data streams you came across in your mental health data project from the other course that might be good to use with algorithmic signal detection?
+### Are there any data streams you came across in your mental health data project from the other course that might be good to use with algorithmic signal detection?
 - One data stream that might be a better fit for algorithmic signal detection in the context of mental health is social media data.
 
-# Why are they, or aren't they a good fit?
+### Why are they, or aren't they a good fit?
 It generate large amounts of data, including text, images, and videos, that can be analyzed using natural language processing algorithms, computer vision algorithms, or a combination of both.
 
 social media data also has limitations and ethical considerations that must be taken into account when using it for algorithmic signal detection.
 
-# Assume for a moment you have a perfect data set, what kind of event might a 'mental health' signal correspond to in real life?
+### Assume for a moment you have a perfect data set, what kind of event might a 'mental health' signal correspond to in real life?
 Here are a few examples:
 1. An increase in the frequency of language related to depression or anxiety in social media posts, which might indicate a higher prevalence of these mental health disorders in a given population.
 
@@ -497,13 +504,13 @@ Here are a few examples:
 
 3. An increase in the frequency of mental health-related searches on a search engine, which might suggest that individuals are seeking information or resources related to mental health issues.
 
-# Is this signal something public health can respond to in the short term or long term?
+### Is this signal something public health can respond to in the short term or long term?
 Mental health signal can be responded to in the short or long term will depend on a variety of factors such as:
 1. Nature of the signal, 
 2. Resources available, 
 3. Policies and regulations governing public health interventions
 
-#Pretend you have the perfect data set and you find something right now you can act on, think about how you want to mobilize your partners and stakeholders
+### Pretend you have the perfect data set and you find something right now you can act on, think about how you want to mobilize your partners and stakeholders
 I would want to mobilize my partners and stakeholders quickly and effectively to ensure a coordinated and efficient response, steps would be -
 1. Identify and engage key partners and stakeholders
 2. Share data and insights
@@ -512,7 +519,7 @@ I would want to mobilize my partners and stakeholders quickly and effectively to
 5. Evaluate outcomes
 
 
-#How would you like to take advantage of this timely information to communicate to the public?
+### How would you like to take advantage of this timely information to communicate to the public?
 It's important to be clear, concise, and empathetic:
 1. Provide actionable information
 2. Empower people to take action
@@ -520,7 +527,7 @@ It's important to be clear, concise, and empathetic:
 4. Acknowledge challenges and barriers
 
 
-#How do approach leadership and explain to them how serious this situation is and what you can do to help?
+### How do approach leadership and explain to them how serious this situation is and what you can do to help?
 It's important to be clear and concise in  communication, here are some steps-
 1. Gather all relevant information
 2. Frame the situation
@@ -531,18 +538,10 @@ It's important to be clear and concise in  communication, here are some steps-
 
 
 
-## Suggested Reading 6:
+# Suggested Reading 6:
 ## Nitty Gritty
 
-#codes:
-```{r extra_libraries}
-#install these
-library(pracma) #for maths
-library(roll) #for rolling mathematical functions
-library(leaflet) #for mapping
-library(lubridate) #package for making working with dates super easy
-```
-
+## codes:
 ```{r lets_roll}
 SMADAYS <- 7 # number of days for the simple moving average
 EMADAYS <- 7# number of days for Exponentially weighted moving average
@@ -552,7 +551,7 @@ covid_19_epicurve <-
   as_tibble()
 ```
 
-#### Creating a baseline and thresholds
+## Creating a baseline and thresholds
 Baselines can be complex, or simple. Sometimes it's best to pick
 something you can easily explain, like a simple moving average (SMA) and
 then go from there when you are explaining things to someone else.
@@ -562,7 +561,7 @@ see how far away our *actual* values are from the guess. The magnitude
 of the errors will help us determine how far away from baseline we are
 and if we care.
 
-#codes:
+## codes:
 ```{r baseline}
 state_counts <- 
   covid_19_epicurve %>% 
@@ -628,7 +627,7 @@ state_counts <-
 ```
 
 
-#### Plotting our data, thresholds and hotspots
+## Plotting our data, thresholds and hotspots
 ```{r looking_athotspots}
 #this is a bit verbose, and could be cleaned up with a case_when() or two, but lets keep it simple
 #I want to highlight days that shot past the expected number by our 
@@ -680,7 +679,7 @@ ggplot(state_counts_forplot, aes(date, total_cases)) +
   
 ```
 
-#### What do you notice?
+### What do you notice?
 Look at the threshold lines, what do you notice? What happens to them
 during a peak, during quiet times? What does this mean for false alarms
 during peaks or "off-season" times?
@@ -735,9 +734,6 @@ number the more likely this person is presenting with anxiety or
 depression.
 
 ```{r}
-library(broom)
-library(ggfortify)
-library(modelr)
 #PHQ-9* Questionnaire for Depression Scoring and Interpretation 
 ##Minimal depression 0-4
 ##Mild depression 5-9
@@ -814,7 +810,7 @@ fake_depression_scale_scores %>%
   
 ```
 
-#### Quick note on pivot_longer()
+### Quick note on pivot_longer()
 
 Pivoting is a common practice in data wrangling and depending on what
 someone is doing it might be advantageous to have tables be longer or
