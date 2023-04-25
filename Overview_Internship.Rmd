@@ -1,7 +1,7 @@
 ---
 title: "Internship Work"
-author: "Manisha Singh; Senetcky, Alexander"
-date: "`'2023-03-08'`"
+author: "Manisha, Singh; Senetcky, Alexander; Archambault, Gary"
+date: "2023-03-08"
 output:
   html_document:
     toc: true # table of content true
@@ -17,12 +17,8 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-#install.packages("RSocrata")
 library(RSocrata)
-#install.packages("tidyverse")
 library(tidyverse)
-
 library(pracma) #for maths
 library(roll) #for rolling mathematical functions
 library(leaflet) #for mapping
@@ -30,12 +26,21 @@ library(lubridate) #package for making working with dates super easy
 library(broom)
 library(ggfortify)
 library(modelr)
-
 ```
 
-# Objectives:
-Throughout this practicum course, our goal is to demonstrate proficiency or an 
-appropriate level of understanding to the student in the following areas:
+# Project Overview
+
+## Project context
+The work presented here was part of a collaborative effort between University of Connecticut's Manisha Singh, MPH and the Connecticut Department of Public Health (DPH). Manisha wanted to learn more about DPH and their technology stack and DPH wanted the work and the learning to be captured in a way so that is can be shared as a resource to help others learn. 
+
+Together they worked to build this RMarkdown document using R and the RStudio IDE and data from Connecticut's Open Data Portal (ODP) that is maintained by Connecticut's Office of Policy Management (OPM).  
+
+This document was originally meant to guide a practicum student, where appropriate, some of the content will be changed to accommodate a broader audience and may not fully reflect what happened during the practicum course. 
+
+
+## Objectives:
+Throughout the Original practicum course, the goal was to demonstrate proficiency or an 
+appropriate level of understanding in the following areas:
 
 
 ## Knowledge based skills:
@@ -46,13 +51,10 @@ appropriate level of understanding to the student in the following areas:
 -   A working knowledge of the [R Studio Integrated Development
     Environment (IDE)](https://www.rstudio.com/products/rstudio/)
 
--   A working knowledge of using R to query Star-model based data housed
-    within SQL databases
-
 -   A working knowledge of Connecticut's [Open Data
     Portal](https://data.ct.gov/)(ODP)
 
--   A basic understanding of Git, a distributed source control
+-   A basic understanding of Git, a distributed source control system
 
 
 ## Project based Outcomes:
@@ -113,11 +115,24 @@ cat("\n4. There may be limitations in terms of the amount or types of data that 
 <details>
   <summary> Potential Improvements that can be made to the page are: \n\n</summary>
     ```{r, results='asis',echo=FALSE, eval=TRUE}
-cat("\n1. Simplifying the website layout and making it more user-friendly. \n") 
+cat("\n1. Simplifying the website layout and making it more user-friendly. \n" ) 
 cat("\n2. Providing more context and explanation for data visualizations. \n") 
 cat("\n3. Updating data sets on a more frequent basis to ensure accuracy and completeness. \n") 
 cat("\n4. Adding additional data sets and allowing for more customization of filters to meet different user needs. \n\n\n") 
     ```
+</details>
+
+
+## Potential Improvements:
+<details>
+  <summary> Potential Improvements that can be made to the page are: </summary>
+
+1. Simplifying the website layout and making it more user-friendly. 
+2. Providing more context and explanation for data visualizations.  
+  
+3. Updating data sets on a more frequent basis to ensure accuracy and completeness.
+4. Adding additional data sets and allowing for more customization of filters to meet different user needs.
+
 </details>
 
 # Suggested Reading 1:
@@ -150,14 +165,14 @@ in publicly released CT Monkey Pox Age group data. The ODP let's users
 do an API callout to pull data into memory
 [dataset](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_AgeGroup/bg8t-bfyp).
 ### codes :
-```{r Read_Monkeypox_data, }
+```{r read_odp_data }
 
 monkey_pox_agegroups <- 
   RSocrata::read.socrata(
     url = "https://data.ct.gov/resource/bg8t-bfyp.json"
   ) %>% 
   as_tibble()
-print(monkey_pox_agegroups)
+glimpse(monkey_pox_agegroups)
 ```
 
 
