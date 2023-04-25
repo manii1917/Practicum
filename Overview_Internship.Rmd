@@ -46,12 +46,12 @@ appropriate, some of the content will be changed to accommodate a broader
 audience and may not fully reflect what happened during the practicum course. 
 
 
-## Objectives:
+## Objectives
 Throughout the Original practicum course, the goal was to demonstrate proficiency 
 or an appropriate level of understanding in the following areas:
 
 
-## Knowledge based skills:
+## Knowledge based skills
 -   A working knowledge of the statistical programming language, R, and
     its family of packages known as the
     [tidyverse](https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/)
@@ -65,14 +65,14 @@ or an appropriate level of understanding in the following areas:
 -   A basic understanding of Git, a distributed source control system
 
 
-## Project based Outcomes:
+## Project based Outcomes
 -  Our goal is to create a product that combines R and RMarkdown and the ODP 
 that will showcase the strengths and possible uses for each.    
 -  Our product will also serve as a guide for someone looking to learn how to 
 use these tools and help point others to related helpful resources.
 
 
-## Suggested Reading 1:
+## Suggested Reading 1
 An R Introduction:
 [R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections, 1, 2,
 3.1-3.1.1
@@ -85,10 +85,8 @@ ODP.  Since this project is primarily written in R, the focus on will on the
 package `RSocrata`
 
 ## Getting Data from the ODP
-I find the best way to learn R, or any language, is to start with a concrete 
-clearly defined problem.  
-Take that problem and then break it into smaller pieces, and then start tackling
-it from there. 
+I find the best way to learn R, or any language, is to start with a concrete, 
+clearly defined problem and then break it into smaller pieces. 
 
 One of the earliest hurdles an epidemiologist might have to overcome involves 
 reading data into the working environment. Usually, there are a few 
@@ -114,7 +112,7 @@ a great, reliable option that ensures anyone who wants to follow along
 we be starting from the same dataframe and setup.
 
 
-[dataset](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_AgeGroup/bg8t-bfyp).
+[Take a look at the dataset here](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_AgeGroup/bg8t-bfyp)
 
 ```{r read_odp_agegroup_data}
 #reading the data in from the API
@@ -129,39 +127,40 @@ glimpse(ct_agegroup)
 ```
 
 
-## Suggested Reading 2:
+## Plotting ODP CT Reportable Disease Data
+We've read in some data, now let's use `read.socrata()` and attempt to
+do some plotting
+
+### Suggested Reading 2
 R Visualizations
 
 [R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections
 3.2-3.4, skim 3.5, 3.6, skim 3.7-3.10
 
-## Plotting ODP Monkey Pox Data
-Armed with the reading above, and the *read.socrata()* example, please
-attempt to do the following:
 
+### Exercise
 -   Create a new .R script
--   Download the MPOX state
+-   Download the CT State Reportable Disease data
     [data](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_State/qhtt-czu2)
     using the URL "<https://data.ct.gov/resource/qhtt-czu2.json>" and assign it to a tibble
--   Using the ReportPeriodStart variable for the x-axis and a count on
+-   Using the `ReportPeriodStart` variable for the x-axis and a count on
     the y axis, please create a bar chart using ggplot2 package (which
     is part of the tidyverse package) and *geom_bar()*
     
-## codes :    
-```{r eval=FALSE, include=FALSE}
-monkey_pox_state_data <- 
+#### An Example Solution
+
+```{r example1}
   RSocrata::read.socrata(
     url = "https://data.ct.gov/resource/qhtt-czu2.json"
   ) %>% 
-  as_tibble()
-monkey_pox_state_data %>% 
+  as_tibble() %>% 
   ggplot() +
   geom_bar(aes(reportperiodstart))
 ```
 
 
-## Thoughts or Assigned work:
-```{Assigned work}
+#### Thoughts on Assigned work
+```{r, example2}
 #Read MonkeyPox Data into a tibble
 monkey_pox_dt <- 
   RSocrata::read.socrata(
@@ -178,8 +177,8 @@ ggplot(data = monkey_pox_dt) +
 
 #Modifying the existing plot to display label and change in colors
 ggplot(data = monkey_pox_dt) + 
-  geom_bar(mapping = aes(x = reportperiodstart,fill = ..count..)) +
-  geom_text(aes(x = reportperiodstart, label = ..count..), stat = "count", vjust = 1.5, colour = "white")
+  geom_bar(mapping = aes(x = reportperiodstart, fill = ..count..)) +
+  geom_text(aes(x = reportperiodstart, label = ..count..), stat = "count", vjust = 1.5, colour = "black")
 ```
 
 
