@@ -1,6 +1,6 @@
 ---
 title: "Internship Work"
-author: "Manisha, Singh; Senetcky, Alexander; Archambault, Gary"
+author: "Singh, Manisha; Senetcky, Alexander; Archambault, Gary"
 date: "2023-03-08"
 output:
   html_document:
@@ -17,13 +17,13 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-library(RSocrata)
-library(tidyverse)
+library(RSocrata) #for interacting with the ODP
+library(tidyverse) #for dataframe manipulations
 library(pracma) #for maths
 library(roll) #for rolling mathematical functions
 library(leaflet) #for mapping
 library(lubridate) #package for making working with dates super easy
-library(broom)
+library(broom) #for easier navigation of statistical models
 library(ggfortify)
 library(modelr)
 ```
@@ -31,16 +31,24 @@ library(modelr)
 # Project Overview
 
 ## Project context
-The work presented here was part of a collaborative effort between University of Connecticut's Manisha Singh, MPH and the Connecticut Department of Public Health (DPH). Manisha wanted to learn more about DPH and their technology stack and DPH wanted the work and the learning to be captured in a way so that is can be shared as a resource to help others learn. 
+The work presented here was part of a collaborative effort between University 
+of Connecticut's Manisha Singh, MPH and the Connecticut Department of Public 
+Health (DPH). Manisha wanted to learn more about DPH and their technology stack 
+and DPH wanted the work and the learning to be captured in a way so that is 
+can be shared as a resource to help others learn. 
 
-Together they worked to build this RMarkdown document using R and the RStudio IDE and data from Connecticut's Open Data Portal (ODP) that is maintained by Connecticut's Office of Policy Management (OPM).  
+Together they worked to build this RMarkdown document using R and the RStudio 
+IDE and data from Connecticut's Open Data Portal (ODP) that is maintained by 
+Connecticut's Office of Policy Management (OPM).  
 
-This document was originally meant to guide a practicum student, where appropriate, some of the content will be changed to accommodate a broader audience and may not fully reflect what happened during the practicum course. 
+This document was originally meant to guide a practicum student. Where 
+appropriate, some of the content will be changed to accommodate a broader 
+audience and may not fully reflect what happened during the practicum course. 
 
 
 ## Objectives:
-Throughout the Original practicum course, the goal was to demonstrate proficiency or an 
-appropriate level of understanding in the following areas:
+Throughout the Original practicum course, the goal was to demonstrate proficiency 
+or an appropriate level of understanding in the following areas:
 
 
 ## Knowledge based skills:
@@ -52,132 +60,77 @@ appropriate level of understanding in the following areas:
     Environment (IDE)](https://www.rstudio.com/products/rstudio/)
 
 -   A working knowledge of Connecticut's [Open Data
-    Portal](https://data.ct.gov/)(ODP)
+    Portal](https://data.ct.gov/)(ODP) and the RScrata package
 
 -   A basic understanding of Git, a distributed source control system
 
 
 ## Project based Outcomes:
-Our goal is to create an ODP data product that will make it easier for the public to access a tabular version of the data currently available on DPH's website. It will also enable them to perform simple data manipulation tasks to create a summarized or graphical view using R.
+-  Our goal is to create a product that combines R and RMarkdown and the ODP 
+that will showcase the strengths and possible uses for each.    
+-  Our product will also serve as a guide for someone looking to learn how to 
+use these tools and help point others to related helpful resources.
 
 
-# Timeline:
-## Getting set up:
-1.  Getting Access to our developer environment and star model
-
-2.  R + R-Studio Bootcamp
-
-3.  Git crash course
-
-4.  R use cases at the DPH
-
-## Project Development:
-1.  Primer on working in Azure Devops - primarily git focused
-
-2.  Overview of the data on [CT- DPH Infectious Diseases Statistics page](https://portal.ct.gov/DPH/Epidemiology-and-Emerging-Infections/Infectious-Diseases-Statistics)
-
-    -  Pros and Cons - how do we think we can make it better.
-    
-    
-3.  Pulling the data from the star model
-
-4.  Comparing the data from the star model to previous public releases
-
-5.  Creating a script that can be the basis of our automation that will
-    move data from the star model to the ODP for public consumption
-
-
-# Infectious Disease Statistics page: 
-Some potential pros and cons of the Infectious Diseases Statistics page are listed below along with few potential improvement scope:
-```{r, eval=FALSE}
-```
-## Pros:
-<details>
-  <summary>Advantages of using the page are: \n\n</summary>
-    ```{r, results='asis', echo=FALSE, eval=TRUE}
-cat("\n1.  Provides access to a variety of statistics related to infectious diseases in Connecticut. \n") 
-cat("\n2.  Offers data visualizations in the form of interactive charts, graphs, and maps. \n") 
-cat("\n3.  Allows users to filter data by disease, year, age, and other factors. \n") 
-cat("\n4.  Provides information on data definitions and methodology. \n\n\n") 
-    ```
-</details>
-## Cons:
-<details>
-  <summary> Disadvantages of using the page are: \n\n</summary>
-    ```{r, results='asis', echo=FALSE, eval=TRUE}
-cat("\n1. The website layout can be overwhelming and difficult to navigate for some users. \n") 
-cat("\n2. Some data visualizations may be difficult to interpret or understand without additional context. \n") 
-cat("\n3. Some data sets may be outdated or incomplete. \n") 
-cat("\n4. There may be limitations in terms of the amount or types of data that can be displayed. \n\n\n") 
-    ```
-</details>
-## Potential Improvements:
-<details>
-  <summary> Potential Improvements that can be made to the page are: \n\n</summary>
-    ```{r, results='asis',echo=FALSE, eval=TRUE}
-cat("\n1. Simplifying the website layout and making it more user-friendly. \n" ) 
-cat("\n2. Providing more context and explanation for data visualizations. \n") 
-cat("\n3. Updating data sets on a more frequent basis to ensure accuracy and completeness. \n") 
-cat("\n4. Adding additional data sets and allowing for more customization of filters to meet different user needs. \n\n\n") 
-    ```
-</details>
-
-
-## Potential Improvements:
-<details>
-  <summary> Potential Improvements that can be made to the page are: </summary>
-
-1. Simplifying the website layout and making it more user-friendly. 
-2. Providing more context and explanation for data visualizations.  
-  
-3. Updating data sets on a more frequent basis to ensure accuracy and completeness.
-4. Adding additional data sets and allowing for more customization of filters to meet different user needs.
-
-</details>
-
-# Suggested Reading 1:
-## R Introduction:
-
+## Suggested Reading 1:
+An R Introduction:
 [R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections, 1, 2,
 3.1-3.1.1
 
-## R and the ODP
-### Getting Data from the ODP
-I find the best way to learn R, or any language, is to start with a problem, break it into
-pieces, and then start tackling it from there. One of the earliest hurdles an epidemiologist
-might have to overcome involves reading data into the environment. Usually, there are a few 
-options and ways to go about this in each language. Both SAS and R Studio have a point-and-click 
-GUI to read data and options to ingest data programmatically. R is generally easier to do this
-with because it is less strict on data type and length, but a good programmer will enforce 
-these things anyway. Today, we'll be doing something different since one of the goals is to 
-learn the Open Data Portal. We will play with data stored on the open web and pull it down 
+# R and the ODP
+The ODP by itself is a very handy tool to be able to use. If becomes even more 
+useful when you combine your use of the portal with some of the publicly 
+available packages across various languages that can interact with data on the
+ODP.  Since this project is primarily written in R, the focus on will on the 
+package `RSocrata`
+
+## Getting Data from the ODP
+I find the best way to learn R, or any language, is to start with a concrete 
+clearly defined problem.  
+Take that problem and then break it into smaller pieces, and then start tackling
+it from there. 
+
+One of the earliest hurdles an epidemiologist might have to overcome involves 
+reading data into the working environment. Usually, there are a few 
+options and ways to go about this in each language. Both SAS and R Studio have 
+a point-and-click GUI to read data and options to ingest data programmatically. 
+R can be easier to do this with because it is less strict with variable length
+and a good predictor of variable types. However, a good programmer who wishes
+to ensure their work is reproducible will enforce things like length or type 
+anyway. 
+
+We'll be starting somewhere a little different when it comes to data ingestion.
+Since one of the goals is to learn the Open Data Portal. We are going to dive 
+right in play with data stored on the open web and pull it down 
 using an Application Programming Interface or API.
 
-### Installing RSocrata Package
-Below is a code chunk showing the installation of the RSocrata Package.
-For your first time installing this, you will want to erase the \# and
-run that line to install the package.
+### Reading Data in from the API
 
-Below is the library statement that invokes using that
-package's functions for your workflow. We will heavily use the
-function *read. socrata()*. You can see it in action below, where I pull
-in publicly released CT Monkey Pox Age group data. The ODP let's users
-do an API callout to pull data into memory
+We will heavily use the function `read.socrata()`. You can see it in 
+action below, where we pull in publicly released CT Reportable Disease Data. 
+The ODP let's users do an API callout to pull data into memory without having
+to navigate to the website and click through a menu to download.  This can be
+a great, reliable option that ensures anyone who wants to follow along
+we be starting from the same dataframe and setup.
+
+
 [dataset](https://data.ct.gov/Health-and-Human-Services/CT_CaseReportableDisease_AgeGroup/bg8t-bfyp).
-### codes :
-```{r read_odp_data }
 
-monkey_pox_agegroups <- 
+```{r read_odp_agegroup_data}
+#reading the data in from the API
+ct_agegroup <- 
   RSocrata::read.socrata(
     url = "https://data.ct.gov/resource/bg8t-bfyp.json"
   ) %>% 
   as_tibble()
-glimpse(monkey_pox_agegroups)
+
+#let's take a look at the structure of the dataframe
+glimpse(ct_agegroup)
 ```
 
 
-# Suggested Reading 2:
-## R Visualizations
+## Suggested Reading 2:
+R Visualizations
 
 [R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections
 3.2-3.4, skim 3.5, 3.6, skim 3.7-3.10
@@ -255,9 +208,9 @@ fewer options, but by doing one thing, you can chain them together in any order.
 
 SAS PROC FREQ is a good example; out of the box, it is a handy little
 function for looking at counts across groups in data. Using our
-monkey_pox_agegroups table as an example, you might type something like
+ct_agegroup table as an example, you might type something like
 the following in SAS:
-PROC FREQ data = monkey_pox_agegroups;\
+PROC FREQ data = ct_agegroup;\
 Tables agegroup;\
 Run;
 
@@ -273,12 +226,12 @@ showcase for showing off dplyr verbs.
 ## codes to get percent of the whole,cumulative count, and cumulative percent:
 ```{r, dplyr showcase}
 #let's take a look at the table structure again
-glimpse(monkey_pox_agegroups)
+glimpse(ct_agegroup)
 #base R might use the str() function instead
-str(monkey_pox_agegroups) #think structure
+str(ct_agegroup) #think structure
 #I want a table with counts of age groups, with percents and cumulative counts/percents
 desired_output <- 
-  monkey_pox_agegroups %>% 
+  ct_agegroup %>% 
 #I want my calculations done per group, in this case agegroup
   group_by(agegroup) %>% 
  #this is a counting function, works greeeat with groupby
