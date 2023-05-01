@@ -162,29 +162,30 @@ R Visualizations
 #### Thoughts on Assigned work
 ```{r, example2}
 #Read MonkeyPox Data into a tibble
-monkey_pox_dt <- 
+odp_data <- 
   RSocrata::read.socrata(
     url = "https://data.ct.gov/resource/qhtt-czu2.json"
   ) %>% 
   as_tibble()
 
 #Look at the Data to verify it looks okay
-print(monkey_pox_dt)
+print(odp_data)
 
 #Basic plot on count of cases for each report period start
-ggplot(data = monkey_pox_dt) + 
+ggplot(data = odp_data ) + 
   geom_bar(mapping = aes(x = reportperiodstart))
 
 #Modifying the existing plot to display label and change in colors
-ggplot(data = monkey_pox_dt) + 
+ggplot(data = odp_data ) + 
   geom_bar(mapping = aes(x = reportperiodstart, fill = ..count..)) +
   geom_text(aes(x = reportperiodstart, label = ..count..), stat = "count", vjust = 1.5, colour = "black")
 ```
 
 
 
-# Suggested Reading 3:
-## DPLYR (The bread and butter of the tidyverse): Suggested Reading
+# DPLYR (The bread and butter of the tidyverse)
+## Suggested Reading 3
+
 -   [Quick Overview](https://dplyr.tidyverse.org/) Just read the
     overview and check out the Cheat Sheet
 
@@ -222,7 +223,7 @@ other functions using some other packages. It's in that sweet spot where you sta
 a return on your investment. But for now, let's use recreating proc freq as a
 showcase for showing off dplyr verbs.
 
-## codes to get percent of the whole,cumulative count, and cumulative percent:
+## `dplyr` showcase
 ```{r, dplyr showcase}
 #let's take a look at the table structure again
 glimpse(ct_agegroup)
@@ -233,16 +234,17 @@ desired_output <-
   ct_agegroup %>% 
 #I want my calculations done per group, in this case agegroup
   group_by(agegroup) %>% 
- #this is a counting function, works greeeat with groupby
+ #this is a counting function, works great with groupby
   tally(name = "Frequency") %>% 
 #let's create a new variable
-#ungrouping because I don't want this donee pere group now
+  ungroup() %>% 
+#ungrouping because I don't want this done per group now
   mutate(
     Percent = Frequency/sum(Frequency) * 100, #the sum function works like the SAS one,
     #and just, like the SAS a NULL value will NULL out the entire output, unless 
-    #otherwise specificed to ignore NULLs or NAs
+    #otherwise specified to ignore NULLs or NAs
     
-#lets round this, this could be neested up there, but I like readability
+#lets round this, this could be nested up there, but I like readability
     Percent = round(
       Percent,
       digits = 2
@@ -261,13 +263,14 @@ desired_output
 
 There is more or less your proc freq output. Something like this could
 be tidied up and stored into a function you can use over and over again,
-or another package could be used with similar functions etc.... that
-will be out of the scope of this project, however.
+or another package could be used with similar functions etc... that
+will be out of the scope of this project, however.  
+  
 For now let's pretty that table up to showcase some of the other dplyr
 verbs like select, filter, rename and arrange.
 
-## codes for select, filter, rename and arrange:
-```{r, prettyitup}
+## `select`, `filter`, `rename` and `arrange`
+```{r, }
 
 pretty_output <- 
   desired_output %>% 
@@ -296,121 +299,37 @@ pretty_output
 
 
 ## Question:
-Based on the reading above, can you use the *summarise* function, and
-the dataframe: monkey_pox_state_data to tell me which is the least
+Based on the reading above, can you use the `summarise` function, and
+the dataframe: odp_data to tell me which is the least
 common 'reportperiodend' date?
 
 ## Thoughts or assigned work:
-```{r, prettyitupmp}
+```{r, prettyitup}
 
-monkey_pox_state_data <- 
+odp_data <- 
   RSocrata::read.socrata(
     url = "https://data.ct.gov/resource/qhtt-czu2.json"
   ) %>% 
   as_tibble()
-print(monkey_pox_state_data) 
 
- monkey_pox_state_data %>% count(reportperiodend, sort = TRUE)
- monkey_pox_state_data %>% count(reportperiodstart, sort = TRUE)
- 
- monkey_pox_state_data %>% 
-   group_by(disease) %>%
-   dplyr::summarize(Mean = mean(reportperiodend, na.rm=TRUE))
- 
- pretty_output
+glimpse(odp_data) 
+
+ odp_data %>% count(reportperiodend, sort = TRUE)
+ odp_data %>% count(reportperiodstart, sort = TRUE)
 ```
 
 
+# Signal Detection - A Covid-19 example
+## Suggested Reading 5
 
-# Suggested Reading 4:
-## Influenza: Overview
-Influenza data will go live on the tables we have worked with in just a few days. 
-Respiratory Syncytial Virus(RSV) will likely follow suit, but that is more up in the air. 
-Covid has shifted the seasonal patterns of other respiratory diseases. Many in the public
-health community are worried about Covid, Flu, and RSV coming together to form a "tri-demic."
+Let's discuss signal detection.
 
-Using what we've learned about R, visualizations, the ODP, and GitHub, we're going to begin 
-to put together a Rmarkdown document (like this one here) that will contain exploratory 
-analyses surrounding ODP data for covid and flu that could be potentially useful to public 
-health decision makers. We will also attempt to incorporate signal detection methods to
-see if there is any activity that might be out of the ordinary and eventually, we will take 
-our findings and distill them down into key takeaways that you might try to share 
-with decision-makers and stakeholders.
-
-### Steps
--   Review of ODP datasets for Covid-19 data (hint, there is a set of
-    new tables and a set of old tables)
-
--   Review the ODP datasets for influenza data and any other publicly
-    available data
-
-    -   If needed, engage with ODP data stewards from the Office of
-        Policy and Management they can also help us comb through all the
-        data to find useful datasets
-
--   Construct a .rmd with possibly meaningful analyses
-
-    -   we will code what we can, but if there is anything you've
-        learned biostats that you think might be appropriate, I can work
-        with you to employ those methods and fill in the 'r knowledge
-        gaps'
-
--   TBD
-
-## What is Meaningful?
-In public health and specifically with infectious disease you'll often
-be asking yourself what is a meaningful burden of disease where you can
-and should take action. This can be a difficult to assess. Pretend for a
-moment that you are an epidemiologist working for the Hartford Health
-Department and your local health director tells you that there are 500
-cases of disease X in the city and asks you if this is something we
-should be monitoring.
-
--   What might you be prepared to say?
-
--   What kinds of questions are you asking yourself?
-
--   What kinds of questions do you have for the health director?
-
-## Conclusion:
-```{meaningful}
-
- I would be prepared to say the following:-
-
-1. 500 cases of disease X in the city may indicate a potential outbreak and it would be 
-appropriate to monitor the situation further to determine if action needs to be taken.
-2. To determine if this is a significant burden of disease, we need to consider the incidence rate of the disease, the severity of the illness, and the potential for transmission to others.
-
-Questions I would be asking myself include:-
-  
-1. What is the incidence rate of disease X in the population?
-2. Is disease X a reportable disease in the area, and if so, are the 500 cases representative of all cases in the area?
-3. What are the symptoms and severity of disease X?
-4. Is disease X contagious or does it have a high potential for transmission?
-5. What is the age range and demographic of those affected by disease X?
-6. Are there any other factors, such as recent travel or exposure to an infected person, that may be contributing to the increase in cases?
-  
-Questions I may have for the health director include:-
-  
-1. What actions have already been taken in response to the cases of disease X?
-2. Are there any specific populations or areas of the city where cases are more concentrated?
-3. Is there any information about the source or cause of the disease?
-4. What resources are available to help monitor and respond to the situation if necessary?
-  
- meaningful_output
-```
-
-
-
-# Suggested Reading 5:
-## Signal Detection - A Covid-19 example
-
-Let's discuss about signal detection.
 This is just one take at it and is more helpful when you are counting
 something with high numbers, like syndromic surveillance data. Many of
 the signal detection maths are borrowed from engineering methods for
-quality assurance processes. A few of which were assessed for outbreak
-detection one such
+quality assurance processes. 
+
+A few of which were assessed for outbreak detection, one such
 [paper](https://wwwnc.cdc.gov/eid/article/26/9/19-1315_article).
 Methods such as those, and others that are a little more manual/ad hoc have been
 used to act quickly in public health emergencies as seen
@@ -421,7 +340,9 @@ method we have used in the past. Without getting into the details just
 yet, these methods will often boil down to basically comparing a
 baseline count of what was expected for a given day, based on past
 information to what actually happened, and then flag days that go beyond
-a certain threshold that the user sets. In engineering, a factory might
+a certain threshold that the user sets. 
+
+In engineering, a factory might
 be producing many thousands of products so they have the luxury of
 pulling random samples and working with their means. In public health we
 often have count data and often times much smaller numbers so we have to
@@ -505,10 +426,10 @@ It's important to be clear and concise in  communication, here are some steps-
 
 
 
-# Suggested Reading 6:
-## Nitty Gritty
 
-## codes:
+## Nitty Gritty Code
+
+### codes:
 ```{r lets_roll}
 SMADAYS <- 7 # number of days for the simple moving average
 EMADAYS <- 7# number of days for Exponentially weighted moving average
@@ -518,7 +439,7 @@ covid_19_epicurve <-
   as_tibble()
 ```
 
-## Creating a baseline and thresholds
+### Creating a baseline and thresholds
 Baselines can be complex, or simple. Sometimes it's best to pick
 something you can easily explain, like a simple moving average (SMA) and
 then go from there when you are explaining things to someone else.
@@ -528,7 +449,8 @@ see how far away our *actual* values are from the guess. The magnitude
 of the errors will help us determine how far away from baseline we are
 and if we care.
 
-## codes:
+
+### baseline
 ```{r baseline}
 state_counts <- 
   covid_19_epicurve %>% 
@@ -594,7 +516,7 @@ state_counts <-
 ```
 
 
-## Plotting our data, thresholds and hotspots
+### Plotting our data, thresholds and hotspots
 ```{r looking_athotspots}
 #this is a bit verbose, and could be cleaned up with a case_when() or two, but lets keep it simple
 #I want to highlight days that shot past the expected number by our 
@@ -656,35 +578,11 @@ peaks, are all the does helpful? Too early or too late? Think about if
 these hypothetical alarms were raised, would it buy us enough time to do
 anything?
 
-## Exercise: Back to Influenza
 
-Since we've started this our mpox ODP table now has become a more
-general table with other diseases in it. One such disease is our friend,
-Influenza. Using a related table found here: [Reportable Cases on the
-ODP](https://data.ct.gov/Health-and-Human-Services/Connecticut-Reportable-Disease-Case-List/qhtt-czu2)
-please pull the data down, filter to Influenza cases and practice what
-we did above on this table.
 
-You'll notice that these data are not by day, please use report period
-start as your "date". Since these are already weeks we'll want to be
-careful how we interpret these data. How might we want to change
-EMADAYS, SDSROLL, and SMADAYS? Play around with making changes these
-values and see what happens.
+# Quick and dirty Simple Linear Regression
 
-Add your code to a chunk below this paragraph. I want to see your data
-wrangling, and a plot like the one above. Please let me know what you
-find, and be prepared to answer the following:
-
--   Is this method appropriate for these data, why or why not?
-
--   And what, if any, adjustments did you have to make?
-
--   Is there another baseline we could've used for Flu or Covid, that
-    may or may not be based on the datasets available?
-
-## Quick and dirty Simple Linear Regression
-
-### setup
+## setup
 
 We're going to take a commonly used dataset that is baked into R called
 `iris` and transform the data into something we may see out in the wild
@@ -748,7 +646,7 @@ with each other? Can you we use the anxiety scale to predict either of
 the depression scales? (keep in mind these data are made up, and may
 reflect the opposite of reality).
 
-### Taking a look
+## Taking a look
 
 We'll start out by looking at our data to get a feel. In R for data
 science they suggest taking a small chunk of data that is solely for
@@ -807,7 +705,7 @@ function doco:
 [tidyr cheat sheet- this has good example with
 pictures](https://github.com/rstudio/cheatsheets/blob/main/tidyr.pdf)
 
-### Model building
+## Model building
 
 Be careful! That boxplot, in this case is just for taking a quick peek
 at everything all at once. You might want to draw conclusions, but
@@ -907,15 +805,6 @@ with_pred <-
   #think about why our prediction are different that the blue best fit line (using linear regression) on the test data. What data did we train  our model with, why did we choose those data.
 ```
 
-future:
-
-broom
-
-modelr
-
-t tests
-
-note to self
 
 r for data science chapter 22-24, 26-30
 
