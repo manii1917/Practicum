@@ -72,7 +72,7 @@ that will showcase the strengths and possible uses for each.
 use these tools and help point others to related helpful resources.
 
 
-## Suggested Reading 1
+## Suggested Reading 
 An R Introduction:
 [R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections, 1, 2,
 3.1-3.1.1
@@ -131,7 +131,7 @@ glimpse(ct_agegroup)
 We've read in some data, now let's use `read.socrata()` and attempt to
 do some plotting
 
-### Suggested Reading 2
+### Suggested Reading 
 R Visualizations
 
 [R for Data Science](https://r4ds.had.co.nz/) Chapters/ sections
@@ -184,7 +184,7 @@ ggplot(data = odp_data ) +
 
 
 # DPLYR (The bread and butter of the tidyverse)
-## Suggested Reading 3
+## Suggested Reading 
 
 -   [Quick Overview](https://dplyr.tidyverse.org/) Just read the
     overview and check out the Cheat Sheet
@@ -320,7 +320,6 @@ glimpse(odp_data)
 
 
 # Signal Detection - A Covid-19 example
-## Suggested Reading 5
 
 Let's discuss signal detection.
 
@@ -580,7 +579,7 @@ anything?
 
 
 
-# Quick and dirty Simple Linear Regression
+# Statistical Modeling Example Workflows
 
 ## setup
 
@@ -808,6 +807,8 @@ with_pred <-
 
 r for data science chapter 22-24, 26-30
 
+### Practicing Logistic Regression
+
 ```{r practce_logistics}
 test_logistics_data <- 
   mtcars %>%
@@ -870,4 +871,3 @@ take_alook %>%
 playing around with the following website:\
 [Basic stats explained (in R) - Logistic regression
 (mgimond.github.io)](https://mgimond.github.io/Stats-in-R/Logistic.html)
-Footer
